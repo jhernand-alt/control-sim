@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title data-lang-key="document_title">Análisis de Sistemas de Primer y Segundo Orden</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        /* Estilos Base */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 20px; 
+            background-color: #f0f2f5; 
+            color: #333; 
+        }
+        .container { 
+            max-width: 1400px; 
+            margin: auto; 
+            padding: 25px; 
+            background-color: white; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+            position: relative; /* Necesario para posicionar el selector de idioma */
+        }
+        h1 { 
+            color: #1e40af; 
+            border-bottom: 3px solid #1e40af; 
+            padding-bottom: 10px; 
+            margin-bottom: 25px; 
+        }
+        h2 { 
+            color: #333; 
+            margin-top: 15px; 
+            margin-bottom: 10px; 
+        }
+
+        /* --- Selector de Idioma (Nuevo) --- */
+        #language-selector-container {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            z-index: 10;
+        }
+        .lang-selector {
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+        /* ---------------------------------- */
+
+        /* Controles y Filtros */
+        .controls-and-filters {
+            margin-bottom: 20px; 
+            padding: 15px; 
+            background-color: #f1f5f9; 
+            border-radius: 8px; 
+        }
+        
+        /* Contenedor principal para las 2 columnas */
+        .top-row-grid {
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 20px; 
+            align-items: stretch; 
+        }
+        
+        /* Estilo para los grupos de parámetros/configuración/controlador */
+        .parameter-group {
+            flex: 1 1 350px; /* Columna 1 (Configuración) */
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 6px;
+            background-color: #fff;
+        }
+        
+        /* Contenedor especial que agrupa la FT con los parámetros del sistema y el diagrama */
+        .system-params-ft-group {
+            flex: 1 1 450px; /* Columna 2 (Sistema y FT) */
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Sección de Función de Transferencia y Diagrama de Bloques */
+        .ft-container {
+            padding: 15px;
+            background-color: #e0f2f7; 
+            border: 1px solid #99d9ea;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1em;
+            overflow-x: auto; 
+        }
+        
+        /* Estilos de Select/Inputs */
+        .selector-label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .chart-selector, .input-param {
+            padding: 8px 12px; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+            background-color: white; 
+            transition: all 0.2s; 
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 10px; /* Margen por defecto */
+            width: 90%;
+            box-sizing: border-box;
+        }
+        .input-param {
+            width: 80px; 
+            text-align: center;
+        }
+        
+        /* Contenedores de inputs específicos */
+        #inputParamsContainer div {
+            margin-bottom: 10px;
+        }
+        
+        /* Estilo para la nueva sección del controlador */
+        #controllerParamsWrapper {
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        /* --- Estilos para la Fila de Botones --- */
+        .button-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .action-button {
+            padding: 10px 15px; 
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            transition: background-color 0.3s;
+            flex-grow: 1; 
+        }
+
+        .primary-button {
+            background-color: #10b981; 
+            color: white;
+        }
+        .primary-button:hover {
+            background-color: #059669;
+        }
+
+        .secondary-button {
+            background-color: #ef4444; 
+            color: white;
+        }
+        .secondary-button:hover {
+            background-color: #dc2626;
+        }
+        /* ----------------------------------------------- */
+
+        /* Gráfico */
+        .chart-container { 
+            margin-top: 20px; 
+            padding: 20px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            background-color: #fff; 
+            height: 500px; 
+            position: relative;
+        }
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Estilo MathJax para que las ecuaciones se vean bien */
+        .MathJax {
+            font-size: 1.2em !important;
+        }
+        
+        /* Estilos para Diagrama de Bloques */
+        .diagram-container {
+            margin-top: 20px;
+            font-family: monospace;
+            white-space: pre;
+            text-align: left;
+            padding: 15px;
+            border: 1px solid #99d9ea;
+            background-color: #e0f2f7; 
+            overflow-x: auto;
+        }
+        .diagram-title {
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        /* CORRECCIÓN para reducir el espacio inferior del grupo de parámetros del sistema */
+        #paramTd {
+            margin-bottom: 0; 
+        }
+    </style>
+</head>
+<body>
+
+    <main class="container"> 
+        
+        <div id="language-selector-container">
+            <select id="languageSelector" class="lang-selector" onchange="setLanguage(this.value)">
+                <option value="es">ES (Español)</option>
+                <option value="en">EN (English)</option>
+            </select>
+        </div>
+        
+        <header>
+            <h1 data-lang-key="title_main">⚙️ Respuesta Temporal de Sistemas de Primer y Segundo Orden</h1>
+        </header>
+
+        <div class="controls-and-filters" role="region" aria-label="Parámetros y Tipo de Simulación">
+            
+            <div class="top-row-grid"> 
+                
+                <div class="parameter-group">
+                    <h3 data-lang-key="config_title">Configuración de la Simulación</h3>
+                    
+                    <label class="selector-label" for="loopSelector" data-lang-key="loop_type_label">Tipo de Lazo:</label>
+                    <select id="loopSelector" class="chart-selector" onchange="toggleControllerInputs(); updateDiagram()">
+                        <option value="open" data-lang-key="loop_open">Lazo Abierto</option>
+                        <option value="closed" data-lang-key="loop_closed">Lazo Cerrado (Controlador PID)</option>
+                    </select>
+
+                    <label class="selector-label" for="inputSelector" data-lang-key="input_type_label">Tipo de Entrada $R(s)$:</label>
+                    <select id="inputSelector" class="chart-selector" onchange="toggleInputParams()">
+                        <option value="step" data-lang-key="input_step">Escalón (Step)</option>
+                        <option value="ramp" data-lang-key="input_ramp">Rampa</option>
+                        <option value="sinusoidal" data-lang-key="input_sin">Senoidal (Seno)</option>
+                    </select>
+                    
+                    <hr>
+                    
+                    <h4 data-lang-key="input_params_title">Parámetros de la Entrada</h4>
+                    <div id="inputParamsContainer">
+                        </div>
+                    
+                    <div id="controllerParamsWrapper">
+                        <hr>
+                        <h4 data-lang-key="controller_title">Controlador **PID** ($G_c(s)$)</h4>
+                        
+                        <label class="selector-label" for="paramKc" data-lang-key="kc_label">Ganancia Control ($K_c$) [0.1, 100]:</label>
+                        <input type="number" id="paramKc" class="input-param" value="1.0" step="0.1" min="0.1" max="100.0" onchange="updateFTFromInputs()">
+
+                        <div id="TiContainer">
+                            <label class="selector-label" for="paramTi" data-lang-key="ti_label">Tiempo Integral ($T_i$) [0.001, $\approx \infty$]:</label>
+                            <input type="number" id="paramTi" class="input-param" value="999999.0" step="0.5" min="0.001" max="999999.0" onchange="updateFTFromInputs()">
+                        </div>
+                        
+                        <div id="TdContainer_c"> 
+                            <label class="selector-label" for="paramTd_c" data-lang-key="tdc_label">Tiempo Derivativo ($T_{d,c}$) [0.0, 100]:</label>
+                            <input type="number" id="paramTd_c" class="input-param" value="0.0" step="0.1" min="0.0" max="100.0" onchange="updateFTFromInputs()">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="system-params-ft-group">
+                    
+                    <div class="parameter-group">
+                        <h3 data-lang-key="system_params_title">Parámetros del Sistema ($G_p(s)$)</h3>
+                        
+                        <label class="selector-label" for="systemOrderSelector" data-lang-key="system_order_label">Orden del Sistema:</label>
+                        <select id="systemOrderSelector" class="chart-selector" onchange="toggleSystemParams(); updateFTFromInputs()">
+                            <option value="first" data-lang-key="order_first">Primer Orden (FO)</option>
+                            <option value="second" data-lang-key="order_second">Segundo Orden (SO)</option>
+                        </select>
+                        
+                        <label class="selector-label" for="paramKp" data-lang-key="kp_label">Ganancia ($K_p$) [0.1, 10]:</label>
+                        <input type="number" id="paramKp" class="input-param" value="1.0" step="0.1" min="0.1" max="10.0" onchange="updateFTFromInputs()">
+
+                        <div id="firstOrderParams">
+                            <label class="selector-label" for="paramTau" data-lang-key="tau_label">Constante de Tiempo ($\tau$) [0.1, 100]:</label>
+                            <input type="number" id="paramTau" class="input-param" value="5.0" step="0.5" min="0.1" max="100.0" onchange="updateFTFromInputs()">
+                        </div>
+
+                        <div id="secondOrderParams" style="display:none;">
+                            <label class="selector-label" for="paramWn" data-lang-key="wn_label">Frecuencia Natural ($\omega_n$) [0.1, 10]:</label>
+                            <input type="number" id="paramWn" class="input-param" value="1.0" step="0.1" min="0.1" max="10.0" onchange="updateFTFromInputs()">
+                            
+                            <label class="selector-label" for="paramZeta" data-lang-key="zeta_label">Factor de Amort. ($\zeta$) [-5, 5]:</label>
+                            <input type="number" id="paramZeta" class="input-param" value="0.7" step="0.1" min="-5.0" max="5.0" onchange="updateFTFromInputs()">
+                        </div>
+
+                        <label class="selector-label" for="paramTd" id="paramTdLabel" data-lang-key="td_label">Tiempo Muerto Físico ($T_d$) [0.0, 20]:</label>
+                        <input type="number" id="paramTd" class="input-param" value="0.0" step="0.5" min="0" max="20.0" onchange="updateFTFromInputs()" title="Este Td afecta al retardo de la respuesta.">
+                        
+                    </div>
+                    
+                    <section class="ft-container" aria-labelledby="ftHeader">
+                        <h2 id="ftHeader" data-lang-key="ft_diagram_title">Función de Transferencia y Diagrama</h2>
+                        <div class="ft-display" id="ftDisplay">
+                            </div>
+                        
+                        <div id="diagramBlock" class="diagram-container">
+                             </div>
+                    </section>
+                </div>
+                
+            </div> <div id="buttonRow" class="button-row">
+                <button id="addButton" onclick="addSimulationLine()" class="action-button primary-button" data-lang-key="button_simulate">➕ Simular y Añadir Línea</button>
+                <button id="clearResponsesButton" onclick="clearResponses()" class="action-button secondary-button" style="background-color: #f97316;" data-lang-key="button_clear_responses">🗑️ Borrar Salidas Y(t)</button>
+                <button id="clearAllButton" onclick="clearAllLines()" class="action-button secondary-button" data-lang-key="button_clear_all">🗑️ Borrar Todo</button>
+            </div>
+            
+        </div>
+
+        <section aria-labelledby="graficoHeader">
+            <h2 id="graficoHeader" data-lang-key="chart_title">Respuesta Temporal del Sistema $Y(t)$</h2>
+            <figure class="chart-container" role="img" aria-label="Gráfico de línea comparando la entrada R(t) con la respuesta del sistema Y(t)">
+                <canvas id="responseChart"></canvas>
+            </figure>
+        </section>
+        
+        <div class="credit-text-main" data-lang-key="credit">
+            Hecho por Gemini (Simulación basada en Euler Forward)
+        </div>
+
+    </main>
+    
+    <script>
+        // --- OBJETOS DE TRADUCCIÓN (NUEVO) ---
+        const translations = {
+            'es': {
+                'document_title': 'Análisis de Sistemas de Primer y Segundo Orden',
+                'title_main': '⚙️ Respuesta Temporal de Sistemas de Primer y Segundo Orden',
+                'config_title': 'Configuración de la Simulación',
+                'loop_type_label': 'Tipo de Lazo:',
+                'loop_open': 'Lazo Abierto',
+                'loop_closed': 'Lazo Cerrado (Controlador PID)',
+                'input_type_label': 'Tipo de Entrada $R(s)$: ',
+                'input_step': 'Escalón (Step)',
+                'input_ramp': 'Rampa',
+                'input_sin': 'Senoidal (Seno)',
+                'input_params_title': 'Parámetros de la Entrada',
+                'step_min_label': 'Valor Mínimo $R_{\\min}$ [-100, 100]:',
+                'step_max_label': 'Valor Máximo $R_{\\max}$ [-100, 100]:',
+                'ramp_slope_label': 'Pendiente ($m$) [0.1, 10]:',
+                'sin_amp_label': 'Amplitud ($A$) [0.1, 10]:',
+                'sin_freq_label': 'Frecuencia Angular ($\\omega$) [0.1, 10]:',
+                'controller_title': 'Controlador **PID** ($G_c(s)$)',
+                'kc_label': 'Ganancia Control ($K_c$) [0.1, 100]:',
+                'ti_label': 'Tiempo Integral ($T_i$) [0.001, $\\approx \\infty$]:',
+                'tdc_label': 'Tiempo Derivativo ($T_{d,c}$) [0.0, 100]:',
+                'system_params_title': 'Parámetros del Sistema ($G_p(s)$)',
+                'system_order_label': 'Orden del Sistema:',
+                'order_first': 'Primer Orden (FO)',
+                'order_second': 'Segundo Orden (SO)',
+                'kp_label': 'Ganancia ($K_p$) [0.1, 10]:',
+                'tau_label': 'Constante de Tiempo ($\\tau$) [0.1, 100]:',
+                'wn_label': 'Frecuencia Natural ($\\omega_n$) [0.1, 10]:',
+                'zeta_label': 'Factor de Amort. ($\\zeta$) [-5, 5]:',
+                'td_label': 'Tiempo Muerto Físico ($T_d$) [0.0, 20]:',
+                'ft_diagram_title': 'Función de Transferencia y Diagrama',
+                'button_simulate': '➕ Simular y Añadir Línea',
+                'button_clear_responses': '🗑️ Borrar Salidas Y(t)',
+                'button_clear_all': '🗑️ Borrar Todo',
+                'chart_title': 'Respuesta Temporal del Sistema $Y(t)$',
+                'credit': 'Hecho por Gemini (Simulación basada en Euler Forward)',
+                
+                // Textos dinámicos y de la gráfica
+                'label_open_loop_abbr': 'L.A.', // Lazo Abierto
+                'label_closed_loop_abbr': 'L.C.', // Lazo Cerrado
+                'label_first_order_abbr': 'FO',
+                'label_second_order_abbr': 'SO',
+                'input_label_r': 'Entrada R(t)',
+                'input_abbr_step': 'E', // Escalón
+                'input_abbr_ramp': 'R', // Rampa
+                'input_abbr_sin': 'S', // Senoidal
+                'tooltip_time': 'Tiempo: ',
+                'chart_y_axis': 'Amplitud (R(t) / Y(t))',
+                'chart_x_axis': 'Tiempo (s)',
+                'chart_empty_text': 'Pulse "Simular y Añadir Línea" para ver la respuesta temporal',
+                'chart_title_sim_prefix': 'Respuesta de Sistemas de ',
+                'chart_title_sim_suffix': ' Simulaciones',
+                'diagram_title_open': 'Diagrama de Bloques (Lazo Abierto)',
+                'diagram_title_closed': 'Diagrama de Bloques (Lazo Cerrado - Controlador PID)',
+            },
+            'en': {
+                'document_title': 'First and Second Order Systems Analysis',
+                'title_main': '⚙️ Temporal Response of First and Second Order Systems',
+                'config_title': 'Simulation Configuration',
+                'loop_type_label': 'Loop Type:',
+                'loop_open': 'Open Loop',
+                'loop_closed': 'Closed Loop (PID Controller)',
+                'input_type_label': 'Input Type $R(s)$: ',
+                'input_step': 'Step',
+                'input_ramp': 'Ramp',
+                'input_sin': 'Sinusoidal (Sine)',
+                'input_params_title': 'Input Parameters',
+                'step_min_label': 'Minimum Value $R_{\\min}$ [-100, 100]:',
+                'step_max_label': 'Maximum Value $R_{\\max}$ [-100, 100]:',
+                'ramp_slope_label': 'Slope ($m$) [0.1, 10]:',
+                'sin_amp_label': 'Amplitude ($A$) [0.1, 10]:',
+                'sin_freq_label': 'Angular Frequency ($\\omega$) [0.1, 10]:',
+                'controller_title': 'PID Controller ($G_c(s)$)',
+                'kc_label': 'Control Gain ($K_c$) [0.1, 100]:',
+                'ti_label': 'Integral Time ($T_i$) [0.001, $\\approx \\infty$]:',
+                'tdc_label': 'Derivative Time ($T_{d,c}$) [0.0, 100]:',
+                'system_params_title': 'System Parameters ($G_p(s)$)',
+                'system_order_label': 'System Order:',
+                'order_first': 'First Order (FO)',
+                'order_second': 'Second Order (SO)',
+                'kp_label': 'Gain ($K_p$) [0.1, 10]:',
+                'tau_label': 'Time Constant ($\\tau$) [0.1, 100]:',
+                'wn_label': 'Natural Frequency ($\\omega_n$) [0.1, 10]:',
+                'zeta_label': 'Damping Factor ($\\zeta$) [-5, 5]:',
+                'td_label': 'Physical Dead Time ($T_d$) [0.0, 20]:',
+                'ft_diagram_title': 'Transfer Function and Diagram',
+                'button_simulate': '➕ Simulate and Add Line',
+                'button_clear_responses': '🗑️ Clear Y(t) Responses',
+                'button_clear_all': '🗑️ Clear All',
+                'chart_title': 'System Temporal Response $Y(t)$',
+                'credit': 'Made by Gemini (Simulation based on Euler Forward)',
+                
+                // Textos dinámicos y de la gráfica
+                'label_open_loop_abbr': 'O.L.', // Open Loop
+                'label_closed_loop_abbr': 'C.L.', // Closed Loop
+                'label_first_order_abbr': 'FO',
+                'label_second_order_abbr': 'SO',
+                'input_label_r': 'Input R(t)',
+                'input_abbr_step': 'S', // Step
+                'input_abbr_ramp': 'R', // Ramp
+                'input_abbr_sin': 'Sin', // Sinusoidal
+                'tooltip_time': 'Time: ',
+                'chart_y_axis': 'Amplitude (R(t) / Y(t))',
+                'chart_x_axis': 'Time (s)',
+                'chart_empty_text': 'Press "Simulate and Add Line" to see the temporal response',
+                'chart_title_sim_prefix': 'System Response of ',
+                'chart_title_sim_suffix': ' Simulations',
+                'diagram_title_open': 'Block Diagram (Open Loop)',
+                'diagram_title_closed': 'Block Diagram (Closed Loop - PID Controller)',
+            }
+        };
+
+        let currentLang = 'es'; // Idioma actual por defecto
+
+        /**
+         * Función para cambiar el idioma de la interfaz.
+         * @param {string} lang - Código de idioma ('es' o 'en').
+         */
+        window.setLanguage = function(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+
+            // 1. Actualizar el atributo lang del HTML
+            document.documentElement.lang = lang;
+            
+            // 2. Actualizar el título del documento (elemento title)
+            const titleElement = document.querySelector('title');
+            if (titleElement) {
+                const key = titleElement.getAttribute('data-lang-key');
+                if (key && t[key]) {
+                    titleElement.textContent = t[key];
+                }
+            }
+
+            // 3. Traducir elementos estáticos usando data-lang-key
+            document.querySelectorAll('[data-lang-key]').forEach(element => {
+                const key = element.getAttribute('data-lang-key');
+                if (t[key]) {
+                    // Para inputs y buttons, actualizamos el valor o el texto
+                    if (element.tagName === 'INPUT' || element.tagName === 'BUTTON') {
+                        element.textContent = t[key];
+                    } else if (element.tagName === 'OPTION') {
+                         // Las opciones deben actualizar su texto interno
+                        element.textContent = t[key];
+                    } else {
+                        element.innerHTML = t[key];
+                    }
+                }
+            });
+
+            // 4. Forzar la re-renderización de MathJax después de cambiar el contenido
+            MathJax.typesetPromise([document.getElementById('ftDisplay')]).catch(err => console.log('MathJax Error after lang change:', err));
+
+            // 5. Forzar la actualización de elementos dinámicos
+            toggleInputParams(); // Esto recrea y traduce los campos de entrada
+            updateDiagram();     // Esto recrea y traduce el título del diagrama
+            
+            // 6. Si el gráfico no está vacío, lo forzamos a actualizar para traducir títulos y ejes.
+            if (chartInstance && allResponseDatasets.length > 0) {
+                // Re-ejecutar simulación con datos dummy para obtener R(t) traducida
+                const inputType = document.getElementById('inputSelector').value;
+                const dummyResults = calculateResponse(1, 1, 1, 1, 0, 1, 999999.0, 0.0, 'open', inputType, {}, 'first');
+                renderChart(dummyResults.times, dummyResults.input, allResponseDatasets, inputType); 
+            } else {
+                 // Si está vacío, solo re-renderizar para traducir el mensaje de "vacío"
+                renderChart(generateTimeLabels(), [], allResponseDatasets, 'step');
+            }
+        };
+
+        // --- VARIABLES GLOBALES Y CONSTANTES DE SIMULACIÓN ---
+        let chartInstance = null; 
+        const DURATION = 40;     
+        const START_TIME = 0.0;  
+        const END_TIME = DURATION; 
+        const TIME_STEP = 0.01;  
+        const N_STEPS = Math.ceil((END_TIME - START_TIME) / TIME_STEP); 
+
+        // Almacena solo los datasets de respuesta (Y(t)) para comparación
+        let allResponseDatasets = []; 
+
+        // Paleta de colores para las líneas de respuesta
+        const colors = [
+            'rgb(54, 162, 235)',   
+            'rgb(255, 159, 64)',   
+            'rgb(75, 192, 192)',   
+            'rgb(153, 102, 255)',  
+            'rgb(235, 54, 162)',   
+            'rgb(255, 205, 86)'    
+        ];
+
+        function getNextColor(index) {
+            return colors[index % colors.length];
+        }
+
+        function generateTimeLabels() {
+            const labels = [];
+            for (let i = 0; i <= N_STEPS; i++) {
+                labels.push((START_TIME + i * TIME_STEP).toFixed(2)); 
+            }
+            return labels;
+        }
+
+        // --- FUNCIONES DE GESTIÓN DE LA INTERFAZ ---
+        
+        /**
+         * Alterna los campos de entrada según el tipo de señal (Escalón, Rampa, Seno) y los traduce.
+         */
+        window.toggleInputParams = function() {
+            const inputType = document.getElementById('inputSelector').value;
+            const container = document.getElementById('inputParamsContainer');
+            const t = translations[currentLang];
+            container.innerHTML = ''; 
+
+            if (inputType === 'step') {
+                container.innerHTML = `
+                    <div>
+                        <label class="selector-label" for="paramStepMin">${t.step_min_label}</label>
+                        <input type="number" id="paramStepMin" class="input-param" value="0.0" step="0.1" min="-100.0" max="100.0">
+                    </div>
+                    <div>
+                        <label class="selector-label" for="paramStepMax">${t.step_max_label}</label>
+                        <input type="number" id="paramStepMax" class="input-param" value="1.0" step="0.1" min="-100.0" max="100.0">
+                    </div>
+                `;
+            } else if (inputType === 'ramp') {
+                container.innerHTML = `
+                    <div>
+                        <label class="selector-label" for="paramRampSlope">${t.ramp_slope_label}</label>
+                        <input type="number" id="paramRampSlope" class="input-param" value="0.5" step="0.1" min="0.1" max="10.0">
+                    </div>
+                `;
+            } else if (inputType === 'sinusoidal') {
+                container.innerHTML = `
+                    <div>
+                        <label class="selector-label" for="paramSinAmp">${t.sin_amp_label}</label>
+                        <input type="number" id="paramSinAmp" class="input-param" value="1.0" step="0.1" min="0.1" max="10.0">
+                    </div>
+                    <div>
+                        <label class="selector-label" for="paramSinFreq">${t.sin_freq_label}</label>
+                        <input type="number" id="paramSinFreq" class="input-param" value="0.5" step="0.1" min="0.1" max="10.0">
+                    </div>
+                `;
+            }
+            // Forzar renderizado de MathJax por si las etiquetas tienen símbolos LaTeX (ya se hace en setLanguage, pero por si acaso)
+            MathJax.typesetPromise([container]).catch(err => console.log('MathJax Error in toggleInputParams:', err));
+        }
+        
+        /**
+         * Alterna los campos de parámetros según el orden del sistema seleccionado.
+         */
+        window.toggleSystemParams = function() {
+            const order = document.getElementById('systemOrderSelector').value;
+            const firstOrderDiv = document.getElementById('firstOrderParams');
+            const secondOrderDiv = document.getElementById('secondOrderParams');
+
+            if (order === 'first') {
+                firstOrderDiv.style.display = 'block';
+                secondOrderDiv.style.display = 'none';
+            } else {
+                firstOrderDiv.style.display = 'none';
+                secondOrderDiv.style.display = 'block';
+            }
+
+            // Forzar actualización de FT
+            updateFTFromInputs();
+        }
+
+
+        /**
+         * Configura la interfaz para el Controlador PID.
+         */
+        window.toggleControllerInputs = function() {
+            const loopType = document.getElementById('loopSelector').value;
+            const controllerWrapper = document.getElementById('controllerParamsWrapper');
+            
+            // Muestra/Oculta el bloque completo del Controlador PID
+            controllerWrapper.style.display = loopType === 'closed' ? 'block' : 'none';
+
+            updateFTFromInputs();
+            updateDiagram();
+        }
+
+        // --- FUNCIONES DE LIMPIEZA DEL GRÁFICO ---
+
+        /**
+         * Borra SOLO las líneas de simulación de respuesta Y(t) del gráfico, manteniendo R(t).
+         */
+        window.clearResponses = function() {
+            allResponseDatasets = [];
+            
+            // 1. Recalcular parámetros de la entrada para poder obtener R(t)
+            const inputType = document.getElementById('inputSelector').value;
+            let inputParams = {};
+            if (inputType === 'step') {
+                inputParams = {
+                    min: parseFloat(document.getElementById('paramStepMin').value) || 0.0,
+                    max: parseFloat(document.getElementById('paramStepMax').value) || 1.0,
+                };
+            } else if (inputType === 'ramp') {
+                inputParams = {
+                    slope: parseFloat(document.getElementById('paramRampSlope').value) || 0.5,
+                };
+            } else if (inputType === 'sinusoidal') {
+                inputParams = {
+                    amplitude: parseFloat(document.getElementById('paramSinAmp').value) || 1.0,
+                    frequency: parseFloat(document.getElementById('paramSinFreq').value) || 0.5,
+                };
+            }
+            
+            // Parámetros dummy para calcular R(t)
+            const order = document.getElementById('systemOrderSelector').value;
+            const dummyResults = calculateResponse(1, 1, 1, 1, 0, 1, 999999.0, 0.0, 'open', inputType, inputParams, order); 
+
+            // 3. Renderizamos la línea de entrada (dummyResults.input) y las respuestas vacías
+            renderChart(dummyResults.times, dummyResults.input, allResponseDatasets, inputType); 
+        };
+
+        /**
+         * Borra TODAS las líneas del gráfico (Respuestas Y(t) y Entrada R(t)).
+         */
+        window.clearAllLines = function() {
+            allResponseDatasets = [];
+            const times = generateTimeLabels();
+            const inputType = document.getElementById('inputSelector').value;
+
+            // Renderizamos con un array vacío para R(t) y Y(t), borrando todo.
+            renderChart(times, [], allResponseDatasets, inputType); 
+            
+            updateFTFromInputs(); // Para asegurar que la FT y el diagrama se muestren correctamente.
+        };
+
+
+        // --- FUNCIÓN PRINCIPAL DE SIMULACIÓN Y AÑADIR LÍNEA ---
+
+        /**
+         * Simula la respuesta y añade una nueva línea al gráfico.
+         */
+        window.addSimulationLine = function() {
+            const t = translations[currentLang];
+            // 1. Leer Parámetros
+            const order = document.getElementById('systemOrderSelector').value;
+
+            const Kp = parseFloat(document.getElementById('paramKp').value) || 1.0;
+            const Td_proc = parseFloat(document.getElementById('paramTd').value) || 0.0;
+            
+            // Parámetros FO 
+            const tau = parseFloat(document.getElementById('paramTau')?.value) || 5.0; 
+            
+            // Parámetros SO
+            let wn = parseFloat(document.getElementById('paramWn')?.value) || 1.0;
+            let zeta_read = parseFloat(document.getElementById('paramZeta')?.value);
+            let zeta = isNaN(zeta_read) ? 0.7 : zeta_read; 
+
+            // Parámetros PID
+            const Kc = parseFloat(document.getElementById('paramKc').value) || 1.0;
+            let Ti_read = parseFloat(document.getElementById('paramTi')?.value);
+            let Ti = isNaN(Ti_read) ? 999999.0 : Ti_read;
+            let Td_c_read = parseFloat(document.getElementById('paramTd_c')?.value);
+            let Td_c = isNaN(Td_c_read) ? 0.0 : Td_c_read;
+
+
+            const loopType = document.getElementById('loopSelector').value;
+            const inputType = document.getElementById('inputSelector').value;
+
+            // Parámetros de Entrada Específicos
+            let inputParams = {};
+            if (inputType === 'step') {
+                inputParams = {
+                    min: parseFloat(document.getElementById('paramStepMin').value) || 0.0,
+                    max: parseFloat(document.getElementById('paramStepMax').value) || 1.0,
+                };
+            } else if (inputType === 'ramp') {
+                inputParams = {
+                    slope: parseFloat(document.getElementById('paramRampSlope').value) || 0.5,
+                };
+            } else if (inputType === 'sinusoidal') {
+                inputParams = {
+                    amplitude: parseFloat(document.getElementById('paramSinAmp').value) || 1.0,
+                    frequency: parseFloat(document.getElementById('paramSinFreq').value) || 0.5,
+                };
+            }
+
+            // 2. Actualizar FT y Diagrama (solo genéricos)
+            updateFT(Kp, tau, Td_proc, Kc, Ti, Td_c, loopType, order);
+            updateDiagram();
+            
+            // 3. Calcular la Respuesta Temporal (wn y zeta se pasan por valor)
+            const results = calculateResponse(Kp, tau, wn, zeta, Td_proc, Kc, Ti, Td_c, loopType, inputType, inputParams, order);
+            
+            // 4. Crear el nuevo dataset Y(t)
+            const lineIndex = allResponseDatasets.length;
+            const lineColor = getNextColor(lineIndex);
+
+            // --- CONSTRUCCIÓN DE LA ETIQUETA DE LEYENDA (Y(t)) ---
+            let loopLabel;
+            if (loopType === 'closed') {
+                const ti_label = Ti >= 999999.0 ? '∞' : Ti.toFixed(2);
+                const loopAbbr = t.label_closed_loop_abbr;
+                loopLabel = `${loopAbbr} (Kc:${Kc.toFixed(1)}, Ti:${ti_label}, Td,c:${Td_c.toFixed(2)}s)`;
+            } else {
+                loopLabel = t.label_open_loop_abbr;
+            }
+
+            let systemLabel;
+            if (order === 'first') {
+                const orderAbbr = t.label_first_order_abbr;
+                systemLabel = `${orderAbbr} (Kp:${Kp.toFixed(1)}, τ:${tau.toFixed(1)}, Td:${Td_proc.toFixed(1)}s)`;
+            } else {
+                const orderAbbr = t.label_second_order_abbr;
+                systemLabel = `${orderAbbr} (Kp:${Kp.toFixed(1)}, ωn:${results.finalWn.toFixed(1)}, ζ:${results.finalZeta.toFixed(2)}, Td:${Td_proc.toFixed(1)}s)`;
+            }
+
+            // Parámetros de la entrada
+            let inputLabel = '';
+            let inputAbbr;
+            if (inputType === 'step') {
+                inputAbbr = t.input_abbr_step;
+                inputLabel = ` [${inputAbbr}: ${inputParams.min.toFixed(1)}→${inputParams.max.toFixed(1)}]`; 
+            } else if (inputType === 'ramp') {
+                inputAbbr = t.input_abbr_ramp;
+                inputLabel = ` [${inputAbbr}: m=${inputParams.slope.toFixed(1)}]`; 
+            } else if (inputType === 'sinusoidal') {
+                inputAbbr = t.input_abbr_sin;
+                inputLabel = ` [${inputAbbr}: A=${inputParams.amplitude.toFixed(1)}, ω=${inputParams.frequency.toFixed(1)}]`; 
+            }
+
+            const responseDataset = {
+                label: `Y${lineIndex + 1} ${systemLabel}, ${loopLabel}${inputLabel}`, 
+                data: results.response, 
+                borderColor: lineColor,
+                backgroundColor: lineColor.replace(')', ', 0.5)').replace('rgb', 'rgba'),
+                borderWidth: 3, 
+                fill: false, 
+                pointRadius: 0,
+            };
+            
+            allResponseDatasets.push(responseDataset);
+
+            // 5. Renderizar el Gráfico
+            renderChart(results.times, results.input, allResponseDatasets, inputType);
+        };
+        
+        window.updateFTFromInputs = function() {
+            const order = document.getElementById('systemOrderSelector').value;
+            const Kp = parseFloat(document.getElementById('paramKp').value) || 1.0;
+            const tau = parseFloat(document.getElementById('paramTau')?.value) || 5.0; 
+            const Td_proc = parseFloat(document.getElementById('paramTd').value) || 0.0;
+            const loopType = document.getElementById('loopSelector').value;
+            
+            const Kc = parseFloat(document.getElementById('paramKc').value) || 1.0;
+            const Ti_read = parseFloat(document.getElementById('paramTi')?.value);
+            const Ti = isNaN(Ti_read) ? 999999.0 : Ti_read;
+            const Td_c_read = parseFloat(document.getElementById('paramTd_c')?.value);
+            const Td_c = isNaN(Td_c_read) ? 0.0 : Td_c_read;
+            
+            updateFT(Kp, tau, Td_proc, Kc, Ti, Td_c, loopType, order); 
+            updateDiagram();
+        };
+
+        // --- CÁLCULO DE LA FUNCIÓN DE TRANSFERENCIA (FT) ---
+
+        function updateFT(Kp, tau, Td_proc, Kc, Ti, Td_c, loopType, order) {
+            let ftTex = '';
+            
+            // Uso de optional chaining y valor por defecto para evitar errores si el input no existe
+            const wn = parseFloat(document.getElementById('paramWn')?.value) || 1.0;
+            const zeta_read = parseFloat(document.getElementById('paramZeta')?.value);
+            const zeta = isNaN(zeta_read) ? 0.7 : zeta_read; 
+
+            // Función de Transferencia del Controlador PID
+            let Gc_Tex = `G_c(s) = K_c \\left( 1 + \\frac{1}{T_i s} + T_{d,c} s \\right)`;
+            
+            let Gp_Tex;
+            let G_LC_Tex;
+            
+            if (order === 'first') {
+                Gp_Tex = `G_p(s) = \\frac{K_p}{\\tau s + 1} e^{-T_d s}`;
+                if (loopType === 'open') {
+                    ftTex = `G_{\\text{LA}}(s) = \\frac{Y(s)}{R(s)} = ${Gp_Tex}`;
+                } else { 
+                    G_LC_Tex = `G_{\\text{LC}}(s) = \\frac{Y(s)}{R(s)} = \\frac{G_c(s) G_p(s)}{1 + G_c(s) G_p(s)}`;
+                    ftTex = `${Gc_Tex} \\\\ ${Gp_Tex} \\\\ ${G_LC_Tex}`;
+                }
+            } else { // Segundo Orden
+                const num = `K_p \\omega_n^2`;
+                const den = `s^2 + 2\\zeta\\omega_n s + \\omega_n^2`;
+                Gp_Tex = `G_p(s) = \\frac{${num}}{${den}} e^{-T_d s}`;
+                
+                if (loopType === 'open') {
+                    ftTex = `G_{\\text{LA}}(s) = \\frac{Y(s)}{R(s)} = ${Gp_Tex}`;
+                } else { 
+                    G_LC_Tex = `G_{\\text{LC}}(s) = \\frac{Y(s)}{R(s)} = \\frac{G_c(s) G_p(s)}{1 + G_c(s) G_p(s)}`;
+                    ftTex = `${Gc_Tex} \\\\ ${Gp_Tex} \\\\ ${G_LC_Tex}`;
+                }
+            }
+
+
+            document.getElementById('ftDisplay').innerHTML = `$$${ftTex}$$`;
+            
+            // Renderiza MathJax
+            MathJax.typesetPromise([document.getElementById('ftDisplay')]).catch((err) => console.log('MathJax Error:', err));
+        }
+        
+        // --- CÁLCULO DE LA RESPUESTA TEMPORAL (Mantiene la misma lógica) ---
+
+        function calculateResponse(Kp, tau, wn, zeta, Td_proc, Kc, Ti, Td_c, loopType, inputType, inputParams, order) {
+            const times = [];
+            const input = [];
+            const response_ideal = []; 
+            const response = []; 
+            
+            // --- COTEJO DE PARÁMETROS PARA EVITAR SINGULARIDADES ---
+            let finalWn = wn;
+            let finalZeta = zeta;
+
+            if (order === 'second') {
+                if (finalWn <= 0.0) {
+                    finalWn = 0.01; 
+                }
+            }
+            // --- FIN COTEJO ---
+
+
+            // Estados del sistema
+            let x1 = 0; // x1 = y(t)
+            let x2 = 0; // x2 = dy/dt (solo para SO)
+            
+            // Estados para el PID (Integral y Derivativa)
+            let integral_error = 0.0;
+            let prev_error = 0.0; // Para el término derivativo
+            
+            // *** ESTABLECER EL ESTADO INICIAL PARA LA ENTRADA ESCALÓN ***
+            if (inputType === 'step' && inputParams.min !== undefined) {
+                const R_min = inputParams.min;
+                
+                let K_SS = 0; // Ganancia en estado estacionario (Steady-State Gain)
+                
+                if (loopType === 'open') {
+                    K_SS = Kp; 
+                } else { 
+                    if (Ti < 999999) { // Ti finito (PI/PID)
+                        K_SS = 1.0; 
+                    } else { // Ti infinito (P/PD)
+                        K_SS = (Kc * Kp) / (1 + Kc * Kp);
+                    }
+                }
+                
+                x1 = K_SS * R_min; 
+                x2 = 0; 
+            }
+            
+            const TOTAL_DELAY = Td_proc; 
+            const delaySteps = Math.ceil(TOTAL_DELAY / TIME_STEP);
+            let R_max_at_step = inputType === 'step' && inputParams.max !== undefined ? inputParams.max : 0; 
+
+            // 1. Calcular la respuesta IDEAL (Sistema sin Retardo)
+            for (let i = 0; i <= N_STEPS; i++) {
+                const t = START_TIME + i * TIME_STEP;
+                times.push(t.toFixed(2)); 
+                
+                // y(t) es el estado x1
+                response_ideal.push(x1); 
+                
+                if (i === N_STEPS) break; 
+
+                // --- Calcular la Entrada R(t) ---
+                let r_t = 0;
+                
+                if (inputType === 'step') {
+                    r_t = R_max_at_step;
+                } else if (inputType === 'ramp') {
+                    r_t = t * (inputParams.slope !== undefined ? inputParams.slope : 0.5);
+                } else if (inputType === 'sinusoidal') {
+                    r_t = (inputParams.amplitude !== undefined ? inputParams.amplitude : 1.0) * Math.sin((inputParams.frequency !== undefined ? inputParams.frequency : 0.5) * t);
+                }
+                
+                input.push(r_t);
+
+                // --- Dinámica del Sistema (Euler Forward) ---
+                
+                let u_t = 0; // Entrada al proceso G(s)
+                
+                if (loopType === 'open') {
+                    u_t = r_t; 
+                } else { // Lazo Cerrado (Controlador PID)
+                    const e_t = r_t - x1; // Error e(t) = R(t) - Y(t) = R(t) - x1
+                    
+                    // Término Proporcional
+                    const P_term = Kc * e_t;
+                    
+                    // Término Integral (Sólo si Ti es finito y positivo)
+                    let I_term = 0.0;
+                    if (Ti > 0 && Ti < 999999.0) { 
+                        integral_error += e_t * TIME_STEP; 
+                        I_term = (Kc / Ti) * integral_error;
+                    }
+
+                    // Término Derivativo (Sólo si Td_c es positivo)
+                    let D_term = 0.0;
+                    if (i > 0 && Td_c > 0) { 
+                        const derivative_of_error = (e_t - prev_error) / TIME_STEP;
+                        D_term = Kc * Td_c * derivative_of_error;
+                    }
+                    
+                    // Control total
+                    u_t = P_term + I_term + D_term; 
+                    
+                    // Actualizar el error para el siguiente paso
+                    prev_error = e_t; 
+                }
+
+                if (order === 'first') {
+                    // Ecuación del Sistema (FO): dx1/dt = (Kp * u_t - x1) / tau
+                    const f_t = (Kp * u_t - x1) / tau; 
+                    x1 += f_t * TIME_STEP;
+                } else { // Segundo Orden
+                    // Usamos finalWn y finalZeta (cotejados, permitiendo zeta negativo)
+                    const dx1_dt = x2;
+                    const dx2_dt = Kp * finalWn * finalWn * u_t - 2 * finalZeta * finalWn * x2 - finalWn * finalWn * x1;
+
+                    // Integración Euler:
+                    x1 += dx1_dt * TIME_STEP;
+                    x2 += dx2_dt * TIME_STEP;
+                }
+            }
+            
+            // Añadir el último punto de la entrada R(t)
+            let r_t_final = 0;
+            if (inputType === 'step') {
+                r_t_final = R_max_at_step; 
+            } else if (inputType === 'ramp') {
+                r_t_final = END_TIME * (inputParams.slope !== undefined ? inputParams.slope : 0.5);
+            } else if (inputType === 'sinusoidal') {
+                r_t_final = (inputParams.amplitude !== undefined ? inputParams.amplitude : 1.0) * Math.sin((inputParams.frequency !== undefined ? inputParams.frequency : 0.5) * END_TIME);
+            }
+            input.push(r_t_final); 
+
+
+            // 2. Aplicar el Retardo Total (Td_proc) a la respuesta ideal
+            const initial_value = response_ideal[0] || 0; 
+            for (let i = 0; i <= N_STEPS; i++) {
+                if (i <= delaySteps) {
+                    response.push(initial_value); 
+                } else {
+                    response.push(response_ideal[i - delaySteps]);
+                }
+            }
+
+            return { times, input, response, finalWn, finalZeta };
+        }
+        
+        // --- DIAGRAMA DE BLOQUES - SOLO GENÉRICO Y ESTRUCTURAL ---
+        
+        window.updateDiagram = function() {
+            const loopType = document.getElementById('loopSelector').value;
+            const t = translations[currentLang];
+
+            let diagramHTML = '';
+
+            if (loopType === 'open') {
+                diagramHTML = `
+<div class="diagram-title">${t.diagram_title_open}</div>
+<pre>
+     R(s)           U(s)                   Y(s)
+      +--------------->[ G_p(s) ]------------->
+</pre>
+                `;
+            } else { // Lazo Cerrado (Controlador PID)
+                diagramHTML = `
+<div class="diagram-title">${t.diagram_title_closed}</div>
+<pre>
+          +----------------------------------------------+
+          |                                              |
+          |                      U(s)                    V
+      R(s) V E(s)         +--->[ G_p(s) ]--------> Y(s)
+      +--->[ Σ ]---+--->[ G_c(s)=PID ]---+
+          ^-         |                     |
+          |          |                     |
+          +----------+---------------------> H(s)=1
+                                 (Realimentación)
+</pre>
+                `;
+            }
+
+            document.getElementById('diagramBlock').innerHTML = diagramHTML;
+        }
+
+        // --- RENDERIZADO DEL GRÁFICO (Chart.js) ---
+
+        /**
+         * Renderiza el gráfico con la línea de entrada actual y todas las respuestas almacenadas.
+         */
+        function renderChart(times, currentInputData, allResponses, inputType) {
+             if (chartInstance) {
+                chartInstance.destroy();
+            }
+            
+            const ctx = document.getElementById('responseChart').getContext('2d');
+            const t = translations[currentLang];
+            
+            // 1. Crear el Dataset de la Entrada R(t)
+            let inputDataset = null;
+            if (currentInputData && currentInputData.length > 0) {
+                
+                // --- CONSTRUCCIÓN DE LA ETIQUETA DE LEYENDA (R(t)) ---
+                let inputAbbr;
+                if (inputType === 'step') {
+                    inputAbbr = t.input_abbr_step;
+                } else if (inputType === 'ramp') {
+                    inputAbbr = t.input_abbr_ramp;
+                } else if (inputType === 'sinusoidal') {
+                    inputAbbr = t.input_abbr_sin;
+                }
+                let currentInputLabel = `${t.input_label_r} (${inputAbbr})`;
+                
+                // Leer parámetros actuales de la entrada desde el DOM
+                if (inputType === 'step') {
+                    const min = parseFloat(document.getElementById('paramStepMin')?.value) || 0.0;
+                    const max = parseFloat(document.getElementById('paramStepMax')?.value) || 1.0;
+                    currentInputLabel += ` [${min.toFixed(1)} → ${max.toFixed(1)}]`; 
+                } else if (inputType === 'ramp') {
+                    const slope = parseFloat(document.getElementById('paramRampSlope')?.value) || 0.5;
+                    currentInputLabel += ` [m=${slope.toFixed(1)}]`; 
+                } else if (inputType === 'sinusoidal') {
+                    const amplitude = parseFloat(document.getElementById('paramSinAmp')?.value) || 1.0;
+                    const frequency = parseFloat(document.getElementById('paramSinFreq')?.value) || 0.5;
+                    currentInputLabel += ` [A=${amplitude.toFixed(1)}, ω=${frequency.toFixed(1)}]`; 
+                }
+                // --- FIN CONSTRUCCIÓN DE LA ETIQUETA ---
+
+                inputDataset = {
+                    label: currentInputLabel,
+                    data: currentInputData, 
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgb(255, 99, 132, 0.5)',
+                    borderWidth: 2,
+                    fill: false, 
+                    pointRadius: 0,
+                };
+            }
+            
+            // 2. Combinar Entrada y Respuestas
+            const finalDatasets = [];
+            if (inputDataset) {
+                finalDatasets.push(inputDataset);
+            }
+            finalDatasets.push(...allResponses);
+
+
+            // Manejo de caso inicial o sin datos
+            if (finalDatasets.length === 0) {
+                 chartInstance = new Chart(ctx, {
+                    type: 'line', 
+                    data: { labels: times, datasets: [] }, 
+                    options: getChartOptions(t, allResponses.length) // Opciones traducidas
+                });
+                return;
+            }
+            
+            chartInstance = new Chart(ctx, {
+                type: 'line', 
+                data: {
+                    labels: times,
+                    datasets: finalDatasets
+                },
+                options: getChartOptions(t, allResponses.length) // Opciones traducidas
+            });
+        }
+        
+        /**
+         * Genera las opciones de configuración del gráfico, incluyendo las traducciones.
+         */
+        function getChartOptions(t, numResponses) {
+            return {
+                responsive: true,
+                maintainAspectRatio: false, 
+                animation: false, 
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: numResponses > 0 
+                            ? `${t.chart_title_sim_prefix}${numResponses}${t.chart_title_sim_suffix}`
+                            : t.chart_empty_text
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: (context) => `${t.tooltip_time}${context[0].label}s`,
+                            label: (context) => `${context.dataset.label}: ${context.parsed.y.toFixed(3)}`
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false, 
+                        title: {
+                            display: true,
+                            text: t.chart_y_axis
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: t.chart_x_axis
+                        },
+                        ticks: {
+                            autoSkip: true,
+                            maxTicksLimit: 20,
+                            callback: function(value, index, values) {
+                                const timeValue = parseFloat(this.getLabelForValue(value));
+                                if (timeValue % 5 === 0) { 
+                                    return timeValue.toFixed(0);
+                                } else if (timeValue % 1 === 0) {
+                                     return timeValue.toFixed(0);
+                                }
+                                return null;
+                            }
+                        }
+                    }
+                }
+            };
+        }
+        
+        // --- INICIALIZACIÓN AL CARGAR LA PÁGINA ---
+        window.onload = function() {
+            // Establecer el idioma inicial (por defecto es 'es') y traducir
+            setLanguage(currentLang);
+            document.getElementById('languageSelector').value = currentLang;
+
+            toggleSystemParams(); 
+            updateFTFromInputs(); 
+            
+            // Inicializa el gráfico vacío con las etiquetas de tiempo correctas
+            renderChart(generateTimeLabels(), [], allResponseDatasets, 'step'); 
+        };
+
+    </script>
+</body>
+</html>
