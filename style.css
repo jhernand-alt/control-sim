@@ -1,0 +1,177 @@
+/* style.css - RESTAURADO y MODIFICADO para el nuevo diseño */
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    margin: 20px; 
+    background-color: #f0f2f5; 
+    color: #333; 
+    line-height: 1.6;
+}
+.container { 
+    max-width: 1400px; 
+    margin: auto; 
+    padding: 25px; 
+    background-color: white; 
+    border-radius: 10px; 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+}
+header {
+    text-align: center;
+}
+h1 { 
+    color: #1e40af; 
+    border-bottom: 3px solid #1e40af; 
+    padding-bottom: 10px; 
+    margin-bottom: 25px; 
+    font-size: 1.8em;
+}
+h2 { 
+    color: #3f51b5; 
+    margin-top: 0; /* Ajuste para el nuevo diseño de columna */
+    margin-bottom: 15px;
+    font-size: 1.3em;
+}
+h3 {
+    color: #4a67b8;
+    margin-top: 15px;
+    font-size: 1.1em;
+}
+
+/* --- ESTRUCTURA GRID POR FILAS --- */
+.main-grid-new {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Fila 1: 3 Columnas para Configuración */
+.config-row-1 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Three equal columns */
+    gap: 20px;
+}
+
+/* Fila 2: 2 Columnas para F.T. y Diagrama */
+.config-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two equal columns */
+    gap: 20px;
+}
+
+/* Fila 3: Botones */
+.config-row-3 {
+    padding: 10px 0;
+}
+
+/* Estilo de Paneles y Controles */
+.col-panel {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.ft-diagram-section {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.input-group, .system-group {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+.selector-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    margin-top: 10px;
+    font-size: 0.95em;
+}
+.input-param, .selector-select {
+    width: calc(100% - 10px); 
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; 
+    margin-bottom: 5px;
+}
+
+/* Botones Centrados */
+.button-group-full {
+    display: flex;
+    gap: 10px;
+    justify-content: center; /* Center buttons horizontally */
+    flex-wrap: wrap; 
+}
+.button-group-full .btn {
+    padding: 10px 15px;
+    font-size: 1em;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    font-weight: bold;
+    min-width: 150px;
+}
+.btn-primary { background-color: #1e40af; color: white; }
+.btn-primary:hover { background-color: #1e3a8a; }
+.btn-secondary { background-color: #60a5fa; color: white; }
+.btn-secondary:hover { background-color: #3b82f6; }
+.btn-danger { background-color: #ef4444; color: white; }
+.btn-danger:hover { background-color: #dc2626; }
+
+/* Gráfica y Diagrama */
+.chart-section {
+    position: relative;
+    height: 550px; 
+    min-height: 400px;
+}
+.full-chart {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+#ftDisplay {
+    margin: 15px 0;
+    text-align: center;
+    font-size: 1.1em;
+}
+#diagramBlock {
+    background-color: #eef;
+    padding: 15px;
+    border-radius: 6px;
+    font-family: monospace;
+    white-space: pre;
+    overflow-x: auto;
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+
+/* --- FOOTER --- */
+footer {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 15px;
+    border-top: 1px solid #ddd;
+    color: #666;
+    font-size: 0.9em;
+}
+
+/* Media Query para móvil */
+@media (max-width: 1200px) {
+    .config-row-1 {
+        grid-template-columns: 1fr 1fr; /* 2 columnas en pantallas medianas */
+    }
+}
+@media (max-width: 768px) {
+    .config-row-1, .config-row-2 {
+        grid-template-columns: 1fr; /* 1 sola columna para móviles */
+    }
+    .button-group-full {
+        flex-direction: column;
+    }
+    .button-group-full .btn {
+        width: 100%;
+    }
+}

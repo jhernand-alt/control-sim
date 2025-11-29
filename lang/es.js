@@ -1,7 +1,17 @@
 const translations_es = {
+    // TÍTULOS Y CABECERAS
     'document_title': 'Análisis de Sistemas de Primer y Segundo Orden',
     'title_main': '⚙️ Respuesta Temporal de Sistemas de Primer y Segundo Orden',
-    'config_title': 'Configuración de la Simulación',
+    'config_title': '1. Configuración de Lazo',
+    'input_params_title': '2. Tipo de Entrada $R(s)$',
+    'controller_title': 'Controlador **PID** ($G_c(s)$)',
+    'system_params_title': '3. Parámetros del Sistema ($G_p(s)$)',
+    'ft_title_static': 'Función de Transferencia (Fórmulas)',
+    'ft_diagram_title': 'Diagrama de Bloques',
+    'chart_title': 'Respuesta Temporal del Sistema $Y(t)$',
+    'credit': 'Herramienta de simulación por el modelo de Euler para el análisis de sistemas de control.',
+
+    // SELECTORES
     'loop_type_label': 'Tipo de Lazo:',
     'loop_open': 'Lazo Abierto',
     'loop_closed': 'Lazo Cerrado (Controlador PID)',
@@ -9,55 +19,60 @@ const translations_es = {
     'input_step': 'Escalón (Step)',
     'input_ramp': 'Rampa',
     'input_sin': 'Senoidal (Seno)',
-    'input_params_title': 'Parámetros de la Entrada',
-    'step_min_label': 'Valor Mínimo $R_{\\min}$ [-100, 100]:',
-    'step_max_label': 'Valor Máximo $R_{\\max}$ [-100, 100]:',
-    'ramp_slope_label': 'Pendiente ($m$) [0.1, 10]:',
-    'sin_amp_label': 'Amplitud ($A$) [0.1, 10]:',
-    'sin_freq_label': 'Frecuencia Angular ($\\omega$) [0.1, 10]:',
-    'controller_title': 'Controlador **PID** ($G_c(s)$)',
-    'kc_label': 'Ganancia Control ($K_c$) [0.1, 100]:',
-    'ti_label': 'Tiempo Integral ($T_i$) [0.001, $\\approx \\infty$]:',
-    'tdc_label': 'Tiempo Derivativo ($T_{d,c}$) [0.0, 100]:',
-    'system_params_title': 'Parámetros del Sistema ($G_p(s)$)',
     'system_order_label': 'Orden del Sistema:',
     'order_first': 'Primer Orden (FO)',
     'order_second': 'Segundo Orden (SO)',
+
+    // PARÁMETROS
+    // Entradas
+    'step_min_label': 'Valor Mínimo ($R_{min}$):',
+    'step_max_label': 'Valor Máximo ($R_{max}$):',
+    'ramp_slope_label': 'Pendiente ($m$):',
+    'sin_amp_label': 'Amplitud ($A$):',
+    'sin_freq_label': 'Frecuencia ($\omega$):',
+    // Proceso
     'kp_label': 'Ganancia ($K_p$) [0.1, 10]:',
-    'tau_label': 'Constante de Tiempo ($\\tau$) [0.1, 100]:',
-    'wn_label': 'Frecuencia Natural ($\\omega_n$) [0.1, 10]:',
-    'zeta_label': 'Factor de Amort. ($\\zeta$) [-5, 5]:',
+    'tau_label': 'Constante de Tiempo ($\tau$) [0.1, 100]:',
+    'wn_label': 'Frecuencia Natural ($\omega_n$) [0.1, 10]:',
+    'zeta_label': 'Factor de Amort. ($\zeta$) [-5, 5]:',
     'td_label': 'Tiempo Muerto Físico ($T_d$) [0.0, 20]:',
-    'ft_diagram_title': 'Función de Transferencia y Diagrama',
+    // Controlador
+    'kc_label': 'Ganancia Control ($K_c$) [0.1, 100]:',
+    'ti_label': 'Tiempo Integral ($T_i$) [0.001, $\\approx\\infty$]:',
+    'tdc_label': 'Tiempo Derivativo ($T_{d,c}$) [0.0, 100]:',
+
+    // FÓRMULAS ESTÁTICAS
+    'ft_proc_title': 'F.T. Proceso ($G_p(s)$):',
+    'ft_cont_title_latex': 'Función de Transferencia del Controlador $G_c(s)$ (PID):',
+    'ft_closed_loop_title': 'F.T. Lazo Cerrado (General):',
+    'ft_open_loop_title': 'F.T. Lazo Abierto (General):',
+
+    // BOTONES
     'button_simulate': '➕ Simular y Añadir Línea',
-    'button_clear_responses': '🗑️ Borrar Salidas Y(t)',
-    'button_clear_all': '🗑️ Borrar Todo',
     'button_download_image': '🖼️ Descargar Gráfica (PNG)',
     'button_download_data': '📊 Descargar Datos (CSV)',
-    'chart_title': 'Respuesta Temporal del Sistema $Y(t)$',
-    
-    // CRÉDITO ACTUALIZADO
-    'credit': 'Hecho por Julián Hernández y Gemini (Simulación basada en Euler Forward) Última actualización: 28/11/2025',
-    
-    // Textos dinámicos y de la gráfica
-    'label_open_loop_abbr': 'L.A.', 
-    'label_closed_loop_abbr': 'L.C.', 
+    'button_clear_responses': '🗑️ Borrar Salidas $Y(t)$',
+    'button_clear_all': '🗑️ Borrar Todo',
+
+    // ETIQUETAS DE LEYENDA Y EJE
+    'input_label_r': 'Entrada $R(t)$',
+    'input_abbr_step': 'Escalón',
+    'input_abbr_ramp': 'Rampa',
+    'input_abbr_sin': 'Seno',
+    'label_open_loop_abbr': 'Lazo Abierto',
+    'label_closed_loop_abbr': 'Lazo Cerrado',
     'label_first_order_abbr': 'FO',
     'label_second_order_abbr': 'SO',
-    'input_label_r': 'Entrada R(t)',
-    'input_abbr_step': 'E', 
-    'input_abbr_ramp': 'R', 
-    'input_abbr_sin': 'S', 
-    'tooltip_time': 'Tiempo: ',
-    'chart_y_axis': 'Amplitud (R(t) / Y(t))',
-    'chart_x_axis': 'Tiempo (s)',
-    'chart_empty_text': 'Pulse "Simular y Añadir Línea" para ver la respuesta temporal',
-    'chart_title_sim_prefix': 'Respuesta de Sistemas de ',
+    'chart_title_sim_prefix': 'Respuesta Temporal con ',
     'chart_title_sim_suffix': ' Simulaciones',
+    'chart_empty_text': 'Simule una respuesta para ver el gráfico aquí.',
+    'chart_y_axis': 'Respuesta $Y(t)$',
+    'chart_x_axis': 'Tiempo ($s$)',
+    'tooltip_time': 'Tiempo: ',
+    
+    // DIAGRAMA DE BLOQUES
     'diagram_title_open': 'Diagrama de Bloques (Lazo Abierto)',
     'diagram_title_closed': 'Diagrama de Bloques (Lazo Cerrado - Controlador PID)',
-    
-    // CLAVES PARA DIAGRAMA
-    'diagram_delay_block': 'Retardo Td',
-    'diagram_feedback_block': 'H(s)=1'
+    'diagram_delay_block': 'Retardo $T_d$',
+    'diagram_feedback_block': '$H(s)=1$',
 };

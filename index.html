@@ -5,142 +5,146 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title data-lang-key="document_title">Análisis de Sistemas de Primer y Segundo Orden</title>
     
-    <link rel="stylesheet" href="styles.css"> 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="lang/es.js"></script>
+    <script src="lang/en.js"></script>
+    <script src="script.js"></script>
+    <link rel="stylesheet" href="style.css">
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
 </head>
 <body>
-
-    <main class="container"> 
-        
-        <div id="language-selector-container">
-            <select id="languageSelector" class="lang-selector" onchange="setLanguage(this.value)">
-                <option value="es">ES (Español)</option>
-                <option value="en">EN (English)</option>
-            </select>
-        </div>
-        
+    <div class="container">
         <header>
             <h1 data-lang-key="title_main">⚙️ Respuesta Temporal de Sistemas de Primer y Segundo Orden</h1>
+            <div style="text-align: right; margin-bottom: 10px;">
+                <label for="languageSelector">Idioma:</label>
+                <select id="languageSelector" onchange="window.setLanguage(this.value)">
+                    <option value="es">Español</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
         </header>
 
-        <div class="controls-and-filters" role="region" aria-label="Parámetros y Tipo de Simulación">
-            
-            <div class="top-row-grid"> 
-                
-                <div class="parameter-group">
-                    <h3 data-lang-key="config_title">Configuración de la Simulación</h3>
-                    
-                    <label class="selector-label" for="loopSelector" data-lang-key="loop_type_label">Tipo de Lazo:</label>
-                    <select id="loopSelector" class="chart-selector" onchange="toggleControllerInputs(); updateDiagram()">
-                        <option value="open" data-lang-key="loop_open">Lazo Abierto</option>
-                        <option value="closed" data-lang-key="loop_closed">Lazo Cerrado (Controlador PID)</option>
-                    </select>
+        <div class="main-grid-new">
 
-                    <label class="selector-label" for="inputSelector" data-lang-key="input_type_label">Tipo de Entrada $R(s)$:</label>
-                    <select id="inputSelector" class="chart-selector" onchange="toggleInputParams()">
-                        <option value="step" data-lang-key="input_step">Escalón (Step)</option>
-                        <option value="ramp" data-lang-key="input_ramp">Rampa</option>
-                        <option value="sinusoidal" data-lang-key="input_sin">Senoidal (Seno)</option>
-                    </select>
-                    
-                    <hr>
-                    
-                    <h4 data-lang-key="input_params_title">Parámetros de la Entrada</h4>
-                    <div id="inputParamsContainer">
-                        </div>
-                    
-                    <div id="controllerParamsWrapper">
-                        <hr>
-                        <h4 data-lang-key="controller_title">Controlador **PID** ($G_c(s)$)</h4>
-                        
-                        <label class="selector-label" for="paramKc" data-lang-key="kc_label">Ganancia Control ($K_c$) [0.1, 100]:</label>
-                        <input type="number" id="paramKc" class="input-param" value="1.0" step="0.1" min="0.1" max="100.0" onchange="updateFTFromInputs()">
+            <div class="config-row-1">
 
-                        <div id="TiContainer">
-                            <label class="selector-label" for="paramTi" data-lang-key="ti_label">Tiempo Integral ($T_i$) [0.001, $\approx \infty$]:</label>
-                            <input type="number" id="paramTi" class="input-param" value="999999.0" step="0.5" min="0.001" max="999999.0" onchange="updateFTFromInputs()">
+                <div class="col-panel loop-controller-col">
+                    <h2 data-lang-key="config_title">1. Configuración de Lazo</h2>
+                    <div class="input-group">
+                        <label class="selector-label" for="loopSelector" data-lang-key="loop_type_label">Tipo de Lazo:</label>
+                        <select id="loopSelector" class="selector-select" onchange="window.toggleControllerInputs(); window.updateDiagram()">
+                            <option value="open" data-lang-key="loop_open">Lazo Abierto</option>
+                            <option value="closed" data-lang-key="loop_closed">Lazo Cerrado (Controlador PID)</option>
+                        </select>
+                    </div>
+                    <div id="controllerParamsWrapper" class="input-group" style="display:none;">
+                        <h3 data-lang-key="controller_title">Controlador **PID** ($G_c(s)$)</h3>
+                        <div>
+                            <label class="selector-label" for="paramKc" data-lang-key="kc_label">Ganancia Control ($K_c$) [0.1, 100]:</label>
+                            <input type="number" id="paramKc" class="input-param" value="1.0" step="0.1" min="0.1" onchange="window.updateFTFromInputs()">
                         </div>
-                        
-                        <div id="TdContainer_c"> 
+                        <div>
+                            <label class="selector-label" for="paramTi" data-lang-key="ti_label">Tiempo Integral ($T_i$) [0.001, ≈∞]:</label>
+                            <input type="number" id="paramTi" class="input-param" value="999999.0" step="0.5" min="0.001" onchange="window.updateFTFromInputs()">
+                        </div>
+                        <div>
                             <label class="selector-label" for="paramTd_c" data-lang-key="tdc_label">Tiempo Derivativo ($T_{d,c}$) [0.0, 100]:</label>
-                            <input type="number" id="paramTd_c" class="input-param" value="0.0" step="0.1" min="0.0" max="100.0" onchange="updateFTFromInputs()">
+                            <input type="number" id="paramTd_c" class="input-param" value="0.0" step="0.1" min="0.0" onchange="window.updateFTFromInputs()">
                         </div>
                     </div>
                 </div>
-                
-                <div class="system-params-ft-group">
-                    
-                    <div class="parameter-group">
-                        <h3 data-lang-key="system_params_title">Parámetros del Sistema ($G_p(s)$)</h3>
-                        
+
+                <div class="col-panel input-col">
+                    <h2 data-lang-key="input_params_title">2. Tipo de Entrada $R(s)$</h2>
+                    <div class="input-group">
+                        <label class="selector-label" for="inputSelector" data-lang-key="input_type_label">Tipo de Entrada R(s):</label>
+                        <select id="inputSelector" class="selector-select" onchange="window.toggleInputParams(); window.addSimulationLine()">
+                            <option value="step" data-lang-key="input_step">Escalón (Step)</option>
+                            <option value="ramp" data-lang-key="input_ramp">Rampa</option>
+                            <option value="sinusoidal" data-lang-key="input_sin">Senoidal (Seno)</option>
+                        </select>
+                        <div id="inputParamsContainer" style="margin-top: 10px;">
+                            </div>
+                    </div>
+                </div>
+
+                <div class="col-panel system-col">
+                    <h2 data-lang-key="system_params_title">3. Parámetros del Sistema ($G_p(s)$)</h2>
+                    <div class="input-group system-group">
                         <label class="selector-label" for="systemOrderSelector" data-lang-key="system_order_label">Orden del Sistema:</label>
-                        <select id="systemOrderSelector" class="chart-selector" onchange="toggleSystemParams(); updateFTFromInputs()">
+                        <select id="systemOrderSelector" class="selector-select" onchange="window.toggleSystemParams(); window.updateFTFromInputs()">
                             <option value="first" data-lang-key="order_first">Primer Orden (FO)</option>
                             <option value="second" data-lang-key="order_second">Segundo Orden (SO)</option>
                         </select>
                         
-                        <label class="selector-label" for="paramKp" data-lang-key="kp_label">Ganancia ($K_p$) [0.1, 10]:</label>
-                        <input type="number" id="paramKp" class="input-param" value="1.0" step="0.1" min="0.1" max="10.0" onchange="updateFTFromInputs()">
-
+                        <div>
+                            <label class="selector-label" for="paramKp" data-lang-key="kp_label">Ganancia ($K_p$) [0.1, 10]:</label>
+                            <input type="number" id="paramKp" class="input-param" value="1.0" step="0.1" min="0.1" max="10.0" onchange="window.updateFTFromInputs()">
+                        </div>
                         <div id="firstOrderParams">
-                            <label class="selector-label" for="paramTau" data-lang-key="tau_label">Constante de Tiempo ($\tau$) [0.1, 100]:</label>
-                            <input type="number" id="paramTau" class="input-param" value="5.0" step="0.5" min="0.1" max="100.0" onchange="updateFTFromInputs()">
+                            <label class="selector-label" for="paramTau" data-lang-key="tau_label">Constante de Tiempo (τ) [0.1, 100]:</label>
+                            <input type="number" id="paramTau" class="input-param" value="1.0" step="0.1" min="0.1" max="100.0" onchange="window.updateFTFromInputs()">
                         </div>
-
                         <div id="secondOrderParams" style="display:none;">
-                            <label class="selector-label" for="paramWn" data-lang-key="wn_label">Frecuencia Natural ($\omega_n$) [0.1, 10]:</label>
-                            <input type="number" id="paramWn" class="input-param" value="1.0" step="0.1" min="0.1" max="10.0" onchange="updateFTFromInputs()">
-                            
-                            <label class="selector-label" for="paramZeta" data-lang-key="zeta_label">Factor de Amort. ($\zeta$) [-5, 5]:</label>
-                            <input type="number" id="paramZeta" class="input-param" value="0.7" step="0.1" min="-5.0" max="5.0" onchange="updateFTFromInputs()">
+                            <label class="selector-label" for="paramWn" data-lang-key="wn_label">Frecuencia Natural (ωn) [0.1, 10]:</label>
+                            <input type="number" id="paramWn" class="input-param" value="1.0" step="0.1" min="0.1" max="10.0" onchange="window.updateFTFromInputs()">
+                            <label class="selector-label" for="paramZeta" data-lang-key="zeta_label">Factor de Amort. (ζ) [-5, 5]:</label>
+                            <input type="number" id="paramZeta" class="input-param" value="0.5" step="0.1" min="-5.0" max="5.0" onchange="window.updateFTFromInputs()">
                         </div>
-
-                        <label class="selector-label" for="paramTd" id="paramTdLabel" data-lang-key="td_label">Tiempo Muerto Físico ($T_d$) [0.0, 20]:</label>
-                        <input type="number" id="paramTd" class="input-param" value="0.0" step="0.5" min="0" max="20.0" onchange="updateFTFromInputs()" title="Este Td afecta al retardo de la respuesta.">
-                        
+                        <div>
+                            <label class="selector-label" for="paramTd" data-lang-key="td_label">Tiempo Muerto Físico ($T_d$) [0.0, 20]:</label>
+                            <input type="number" id="paramTd" class="input-param" value="0.0" step="0.1" min="0.0" max="20.0" onchange="window.updateFTFromInputs()">
+                        </div>
                     </div>
-                    
-                    <section class="ft-container" aria-labelledby="ftHeader">
-                        <h2 id="ftHeader" data-lang-key="ft_diagram_title">Función de Transferencia y Diagrama</h2>
-                        <div class="ft-display" id="ftDisplay">
-                            </div>
-                        
-                        <div id="diagramBlock" class="diagram-container">
-                             </div>
-                    </section>
                 </div>
-                
-            </div> <div id="buttonRow" class="button-row">
-                <button id="addButton" onclick="addSimulationLine()" class="action-button primary-button" data-lang-key="button_simulate">➕ Simular y Añadir Línea</button>
-                
-                <button id="downloadImageButton" onclick="downloadChartAsImage()" class="action-button download-button" data-lang-key="button_download_image">🖼️ Descargar Gráfica (PNG)</button>
-                <button id="downloadDataButton" onclick="downloadChartDataAsCSV()" class="action-button download-button" data-lang-key="button_download_data">📊 Descargar Datos (CSV)</button>
-
-                <button id="clearResponsesButton" onclick="clearResponses()" class="action-button secondary-button" style="background-color: #f97316;" data-lang-key="button_clear_responses">🗑️ Borrar Salidas Y(t)</button>
-                <button id="clearAllButton" onclick="clearAllLines()" class="action-button secondary-button" data-lang-key="button_clear_all">🗑️ Borrar Todo</button>
-            </div>
-            
-        </div>
-
-        <section aria-labelledby="graficoHeader">
-            <h2 id="graficoHeader" data-lang-key="chart_title">Respuesta Temporal del Sistema $Y(t)$</h2>
-            <figure class="chart-container" role="img" aria-label="Gráfico de línea comparando la entrada R(t) con la respuesta del sistema Y(t)">
-                <canvas id="responseChart"></canvas>
-            </figure>
-        </section>
-        
-        <div class="credit-text-main" data-lang-key="credit">
             </div>
 
-    </main>
-    
-    <script src="lang/es.js"></script>
-    <script src="lang/en.js"></script>
+            <div class="config-row-2">
+                <div class="ft-diagram-section ft-col">
+                    <h2 data-lang-key="ft_title_static">Función de Transferencia (Fórmulas)</h2>
+                    <div id="ftDisplay" class="ft-display">
+                        </div>
+                </div>
+                <div class="ft-diagram-section diagram-col">
+                    <h2 data-lang-key="ft_diagram_title">Diagrama de Bloques</h2>
+                    <div id="diagramBlock" class="diagram-block">
+                        </div>
+                </div>
+            </div>
 
-    <script src="script.js"></script>
+            <div class="config-row-3">
+                <div class="button-group-full">
+                    <button class="btn btn-primary" onclick="window.addSimulationLine()" data-lang-key="button_simulate">➕ Simular y Añadir Línea</button>
+                    <button class="btn btn-secondary" onclick="window.downloadChartAsImage()" data-lang-key="button_download_image">🖼️ Descargar Gráfica (PNG)</button>
+                    <button class="btn btn-secondary" onclick="window.downloadChartDataAsCSV()" data-lang-key="button_download_data">📊 Descargar Datos (CSV)</button>
+                    <button class="btn btn-danger" onclick="window.clearResponses()" data-lang-key="button_clear_responses">🗑️ Borrar Salidas Y(t)</button>
+                    <button class="btn btn-danger" onclick="window.clearAllLines()" data-lang-key="button_clear_all">🗑️ Borrar Todo</button>
+                </div>
+            </div>
 
+            <div class="chart-row-4">
+                <div class="chart-section">
+                    <h2 data-lang-key="chart_title">Respuesta Temporal del Sistema $Y(t)$</h2>
+                    <canvas id="responseChart" class="full-chart"></canvas>
+                </div>
+            </div>
+
+        </div> <footer>
+            <p data-lang-key="credit">Herramienta de simulación por el modelo de Euler para el análisis de sistemas de control.</p>
+        </footer>
+    </div>
 </body>
 </html>
