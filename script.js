@@ -1,66 +1,190 @@
-// --- MAPA GLOBAL DE TRADUCCIONES ---
-const translations = {
-    'es': translations_es,
-    'en': translations_en
-};
+// ============================================================================
+// APLICAR TEMA ANTES DEL DOM — evita parpadeo al cargar
+// ============================================================================
 
-let currentLang = 'es'; 
-let chartInstance = null; 
-const DURATION = 40;     
-const START_TIME = 0.0;  
-const END_TIME = DURATION; 
-const TIME_STEP = 0.01;  
-const N_STEPS = Math.ceil((END_TIME - START_TIME) / TIME_STEP); 
+applyStoredTheme();
 
-let allResponseDatasets = []; 
-let currentInputDataset = null; 
+// ============================================================================
+// VARIABLES GLOBALES
+// ============================================================================
 
-// --- FUNCIONES DE SOPORTE ---
+const APP_VERSION = 'v1.1.0';
 
-/**
- * Traduce todos los elementos de la interfaz y fuerza la renderización de MathJax.
- */
+let chartInstance = null;
+const DURATION   = 40;
+const START_TIME = 0.0;
+const END_TIME   = DURATION;
+const TIME_STEP  = 0.01;
+const N_STEPS    = Math.ceil((END_TIME - START_TIME) / TIME_STEP);
+
+let allResponseDatasets = [];
+let currentInputDataset = null;
+
+// ============================================================================
+// INTERNACIONALIZACIÓN (i18n)    ── INFRAESTRUCTURA ──
+// ============================================================================
+
+function getTranslations(lang) {
+    const code = lang || localStorage.getItem('language') || 'es';
+    const map  = { es: window.LANG_ES, eu: window.LANG_EU, en: window.LANG_EN };
+    return map[code] || window.LANG_ES;
+}
+
 window.setLanguage = function(lang) {
-    currentLang = lang;
-    const t = translations[lang];
-    
-    // Traducciones estáticas (data-lang-key)
+    localStorage.setItem('language', lang);
+    document.documentElement.lang = lang;
+
+    const t = getTranslations(lang);
+
+    // Traducir elementos estáticos con data-lang-key
     document.querySelectorAll('[data-lang-key]').forEach(el => {
         const key = el.getAttribute('data-lang-key');
-        if (t[key]) {
-            if (el.tagName === 'OPTION') {
-                el.textContent = t[key];
-            } else {
-                el.innerHTML = t[key];
-            }
+        if (!t[key]) return;
+        if (el.tagName === 'OPTION') {
+            el.textContent = t[key];
+        } else if (el.tagName === 'TITLE') {
+            document.title = t[key];
+        } else {
+            el.innerHTML = t[key];
         }
     });
 
-    // Traducciones para opciones de select
-    document.querySelectorAll('select').forEach(select => {
-        Array.from(select.options).forEach(option => {
-            const key = option.getAttribute('data-lang-key');
-            if (key && t[key]) {
-                 option.textContent = t[key];
-            }
-        });
+    if (t.document_title) document.title = t.document_title;
+
+    // Traducir atributos aria-label
+    document.querySelectorAll('[data-lang-key-aria]').forEach(el => {
+        const key = el.dataset.langKeyAria;
+        if (t[key]) el.setAttribute('aria-label', t[key]);
     });
 
-    // Actualizar dinámicos
-    toggleInputParams();
-    updateDiagram(); 
-    toggleSystemParams(); // Esto asegura que los parámetros del sistema se actualicen
+    // Sincronizar el selector de idioma
+    updateLangButton(lang);
+    document.querySelectorAll('.lang-option').forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.lang === lang);
+    });
 
-    // Forzar la renderización de MathJax en todo el cuerpo después de traducir
+    // Actualizar pie de página con la versión
+    const verEl = document.getElementById('appVersionPlaceholder');
+    if (verEl) verEl.textContent = APP_VERSION;
+
+    // Actualizar dinámicos de la app (lógica de simulación)
+    toggleInputParams();
+    updateDiagram();
+    toggleSystemParams();
+
+    // Forzar renderización MathJax
     if (typeof MathJax !== 'undefined') {
         MathJax.typeset();
     }
-    
-    // Re-renderizar el gráfico si existe para actualizar etiquetas y títulos
+
+    // Re-renderizar gráfico si existe
     if (chartInstance) {
-        renderChart(currentInputDataset ? currentInputDataset.data : [], allResponseDatasets, document.getElementById('inputSelector').value);
+        renderChart(
+            currentInputDataset ? currentInputDataset.data : [],
+            allResponseDatasets,
+            document.getElementById('inputSelector').value
+        );
     }
 };
+
+function applyStoredLanguage() {
+    setLanguage(localStorage.getItem('language') || 'es');
+}
+
+// ============================================================================
+// SELECTOR DE IDIOMA (UI)    ── INFRAESTRUCTURA ──
+// ============================================================================
+
+const FLAG_SVGS = {
+    es: `<svg class="flag-svg" width="28" height="19" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="40" fill="#AA151B"/><rect y="10" width="60" height="20" fill="#F1BF00"/></svg>`,
+    eu: `<svg class="flag-svg" width="28" height="19" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="40" fill="#D8202C"/><rect x="24" y="0" width="12" height="40" fill="white"/><rect x="0" y="14" width="60" height="12" fill="white"/><rect x="26.5" y="0" width="7" height="40" fill="#007A3D"/><rect x="0" y="16.5" width="60" height="7" fill="#007A3D"/></svg>`,
+    en: `<svg class="flag-svg" width="28" height="19" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="40" fill="#012169"/><line x1="0" y1="0" x2="60" y2="40" stroke="white" stroke-width="8"/><line x1="60" y1="0" x2="0" y2="40" stroke="white" stroke-width="8"/><line x1="0" y1="0" x2="60" y2="40" stroke="#C8102E" stroke-width="4.5"/><line x1="60" y1="0" x2="0" y2="40" stroke="#C8102E" stroke-width="4.5"/><rect x="24" y="0" width="12" height="40" fill="white"/><rect x="0" y="14" width="60" height="12" fill="white"/><rect x="26" y="0" width="8" height="40" fill="#C8102E"/><rect x="0" y="16" width="60" height="8" fill="#C8102E"/></svg>`
+};
+
+function updateLangButton(lang) {
+    const btn = document.getElementById('langButtonContent');
+    if (!btn) return;
+    const codes = { es: 'ES', eu: 'EU', en: 'EN' };
+    btn.innerHTML = `${FLAG_SVGS[lang] || ''}<span class="lang-code">${codes[lang] || lang.toUpperCase()}</span>`;
+}
+
+window.toggleLangMenu = function() {
+    const menu   = document.getElementById('langMenu');
+    const button = document.getElementById('langButton');
+    menu.classList.toggle('hidden');
+    const isOpen = !menu.classList.contains('hidden');
+    button.setAttribute('aria-expanded', isOpen);
+    if (isOpen) {
+        setTimeout(() => document.addEventListener('click', closeLangMenuOnClickOutside), 0);
+    }
+};
+
+function closeLangMenuOnClickOutside(e) {
+    const wrapper = document.getElementById('languageSelectorWrapper');
+    if (!wrapper.contains(e.target)) {
+        document.getElementById('langMenu').classList.add('hidden');
+        document.getElementById('langButton').setAttribute('aria-expanded', 'false');
+        document.removeEventListener('click', closeLangMenuOnClickOutside);
+    }
+}
+
+// ============================================================================
+// TEMA Y COLORES    ── INFRAESTRUCTURA ──
+// ============================================================================
+
+window.toggleThemeMenu = function() {
+    const menu = document.getElementById('themeMenu');
+    menu.classList.toggle('hidden');
+    if (!menu.classList.contains('hidden')) {
+        setTimeout(() => document.addEventListener('click', closeThemeMenuOnClickOutside), 0);
+    }
+};
+
+function closeThemeMenuOnClickOutside(e) {
+    const menu   = document.getElementById('themeMenu');
+    const button = document.getElementById('themeButton');
+    if (!menu.contains(e.target) && !button.contains(e.target)) {
+        menu.classList.add('hidden');
+        document.removeEventListener('click', closeThemeMenuOnClickOutside);
+    }
+}
+
+window.changeTheme = function(theme) {
+    const root = document.documentElement;
+    if (theme === 'auto') {
+        root.setAttribute('data-theme',
+            window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (localStorage.getItem('theme') === 'auto')
+                root.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+        });
+    } else {
+        root.setAttribute('data-theme', theme);
+    }
+    localStorage.setItem('theme', theme);
+    toggleThemeMenu();
+};
+
+window.changeColorScheme = function(scheme) {
+    document.documentElement.setAttribute('data-color-scheme', scheme);
+    localStorage.setItem('colorScheme', scheme);
+    toggleThemeMenu();
+};
+
+function applyStoredTheme() {
+    const t = localStorage.getItem('theme')       || 'auto';
+    const s = localStorage.getItem('colorScheme') || 'blue';
+    document.documentElement.setAttribute('data-theme',
+        t === 'auto'
+            ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+            : t
+    );
+    document.documentElement.setAttribute('data-color-scheme', s);
+}
+
+// ============================================================================
+// FUNCIONES DE SOPORTE
+// ============================================================================
 
 /**
  * Genera un color aleatorio que sea distinguible.
@@ -83,7 +207,7 @@ function getNextColor() {
 window.toggleInputParams = function() {
     const container = document.getElementById('inputParamsContainer');
     const inputType = document.getElementById('inputSelector').value;
-    const t = translations[currentLang];
+    const t = getTranslations();
     
     container.innerHTML = '';
     let htmlContent = '';
@@ -182,7 +306,7 @@ function renderStaticFT() {
     const display = document.getElementById('ftDisplay');
     const loopType = document.getElementById('loopSelector').value;
     const order = document.getElementById('systemOrderSelector').value; 
-    const t = translations[currentLang];
+    const t = getTranslations();
 
     // Fórmulas base
     const Gp_FO = `G_p(s) = \\frac{K_p}{\\tau s + 1}`;
@@ -232,7 +356,7 @@ function renderStaticFT() {
 window.updateDiagram = function() {
     const loopType = document.getElementById('loopSelector').value;
     const diagramBlock = document.getElementById('diagramBlock');
-    const t = translations[currentLang];
+    const t = getTranslations();
     
     renderStaticFT();
 
@@ -356,7 +480,7 @@ window.addSimulationLine = function() {
     const loopType = document.getElementById('loopSelector').value;
     const order = document.getElementById('systemOrderSelector').value;
     const inputType = document.getElementById('inputSelector').value;
-    const t = translations[currentLang];
+    const t = getTranslations();
     
     const Kp = parseFloat(document.getElementById('paramKp').value);
     const Td = parseFloat(document.getElementById('paramTd').value);
@@ -415,7 +539,7 @@ window.addSimulationLine = function() {
 
 window.downloadChartAsImage = function() {
     if (!chartInstance) {
-        alert(currentLang === 'es' ? 'No hay gráfica para descargar.' : 'No chart to download.');
+        alert(getTranslations().chart_empty_text);
         return;
     }
 
@@ -432,7 +556,7 @@ window.downloadChartAsImage = function() {
 
 window.downloadChartDataAsCSV = function() {
     if (!chartInstance || chartInstance.data.datasets.length === 0) {
-        alert(currentLang === 'es' ? 'No hay datos para descargar.' : 'No data to download.');
+        alert(getTranslations().chart_empty_text);
         return;
     }
 
@@ -477,7 +601,7 @@ window.renderChart = function(currentInputData, allResponses, inputType) {
     }
     
     const ctx = document.getElementById('responseChart').getContext('2d');
-    const t = translations[currentLang];
+    const t = getTranslations();
     
     let inputDataset = null;
     if (currentInputData && currentInputData.length > 0) {
@@ -597,13 +721,9 @@ function getChartOptions(t, numResponses) {
 
 
 // --- INICIALIZACIÓN AL CARGAR LA PÁGINA ---
-window.onload = function() {
-    setLanguage(currentLang);
-    document.getElementById('languageSelector').value = currentLang;
-
-    // Ya no es necesario llamar a toggleSystemParams() o toggleControllerInputs() aquí
-    // ya que setLanguage() llama a toggleInputParams(), updateDiagram() y toggleSystemParams(),
-    // y updateDiagram() llama a renderStaticFT() y toggleControllerInputs() se llama dentro de setLanguage.
-    
-    renderChart([], allResponseDatasets, 'step'); 
-};
+window.addEventListener('DOMContentLoaded', () => {
+    applyStoredLanguage();
+    const verEl = document.getElementById('appVersionPlaceholder');
+    if (verEl) verEl.textContent = APP_VERSION;
+    renderChart([], allResponseDatasets, 'step');
+});
