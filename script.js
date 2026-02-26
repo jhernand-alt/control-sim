@@ -403,9 +403,10 @@ function calculateResponse(Kp, Tau, Wn, Zeta, Td, order, loopType, Kc, Ti, Tdc, 
     let error_prev = 0.0; 
 
     const Td_steps = Math.floor(Td / TIME_STEP);
-    const bufferSize = Td_steps > 0 ? Td_steps : 1;
-    const outputBuffer = new Array(bufferSize).fill(0.0);
-    
+    // Bug 1 corregido: buffer de Td_steps+1 posiciones para que outputBuffer[Td_steps] sea válido.
+    // Con Td=0 → Td_steps=0, buffer=[y_actual], índice 0 = sin retraso. Correcto.
+    const outputBuffer = new Array(Td_steps + 1).fill(0.0);
+
     function R_t(t) {
         if (inputType === 'step') {
             const min = parseFloat(document.getElementById('paramStepMin').value);
@@ -421,56 +422,55 @@ function calculateResponse(Kp, Tau, Wn, Zeta, Td, order, loopType, Kc, Ti, Tdc, 
         }
         return 0.0;
     }
-    
+
     for (let i = 0; i <= N_STEPS; i++) {
         const t = i * TIME_STEP;
         const R = R_t(t);
-        inputData.push({x: t, y: R}); 
+        inputData.push({x: t, y: R});
 
-        let Uc = R; 
-        
+        // Bug 2 corregido: leer la salida retardada ANTES de actualizar el sistema.
+        // outputBuffer[Td_steps] es el valor calculado hace Td_steps pasos = Y(t - Td).
+        const Y_out = outputBuffer[Td_steps];
+
+        // Bug 3 corregido: en lazo cerrado el controlador observa la salida retardada Y_out,
+        // no y_prev (que es la salida interna sin retraso).
+        let Uc = R;
+
         if (loopType === 'closed') {
-            const Y_feedback = y_prev; 
-            const error = R - Y_feedback;
+            const error = R - Y_out;
 
             if (Ti < 999999.0) {
-                 integral_error += error * TIME_STEP;
+                integral_error += error * TIME_STEP;
             } else {
-                 integral_error = 0.0; 
+                integral_error = 0.0;
             }
-            
+
             let derivative_term = 0.0;
             if (Tdc > 0.0 && i > 0) {
                 derivative_term = (error - error_prev) / TIME_STEP;
             }
-            
-            Uc = Kc * (error + (integral_error) + (Tdc * derivative_term));
-            
-            error_prev = error; 
+
+            Uc = Kc * (error + integral_error + (Tdc * derivative_term));
+            error_prev = error;
         }
 
-        let dy_dt = 0.0;
-        let d2y_dt2 = 0.0;
-
+        // Integrar la EDO del sistema
         if (order === 'first') {
-            dy_dt = (1.0 / Tau) * (Kp * Uc - y_prev);
+            const dy_dt = (1.0 / Tau) * (Kp * Uc - y_prev);
             y_prev += dy_dt * TIME_STEP;
-
-        } else { 
+        } else {
             const wn_sq = Wn * Wn;
             const two_zeta_wn = 2.0 * Zeta * Wn;
-            
-            d2y_dt2 = (Kp * wn_sq * Uc) - (two_zeta_wn * y_dot_prev) - (wn_sq * y_prev);
-            
+            const d2y_dt2 = (Kp * wn_sq * Uc) - (two_zeta_wn * y_dot_prev) - (wn_sq * y_prev);
             y_dot_prev += d2y_dt2 * TIME_STEP;
             y_prev += y_dot_prev * TIME_STEP;
         }
 
+        // Insertar el nuevo valor al frente del buffer y descartar el más antiguo
         outputBuffer.unshift(y_prev);
         outputBuffer.pop();
-        
-        const Y_out = outputBuffer[Td_steps];
-        responseData.push({x: t, y: Y_out}); 
+
+        responseData.push({x: t, y: Y_out});
     }
     
     return { inputData, responseData };
