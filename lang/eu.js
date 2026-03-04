@@ -1,102 +1,108 @@
 // ============================================================================
-// CONTROL-SIM — Itzulpenak: Euskara
+// CONTROL-SIM v2 — Itzulpenak: Euskara
 // ============================================================================
-
 window.LANG_EU = {
 
-    // ── Dokumentua eta goiburua ──────────────────────────────────────────────
-    document_title:     'Lehen eta Bigarren Ordenako Sistemen Analisia',
-    title_main:         '⚙️ Lehen eta Bigarren Ordenako Sistemen Denbora-erantzuna',
+    // ── Dokumentua ───────────────────────────────────────────────────────────
+    document_title:         'Kontrol Sistemen Simulagailua',
+    title_main:             '⚙️ Kontrol Sistemen Simulagailua',
 
-    // ── Hizkuntza-hautatzailea ───────────────────────────────────────────────
-    language_label:     'Hizkuntza',
+    // ── Gaia ─────────────────────────────────────────────────────────────────
+    theme_btn_label:        'Gaia edo kolorea aldatu',
+    theme_section_mode:     'Modua',
+    theme_auto:             'Automatikoa (sistema)',
+    theme_light:            'Argia',
+    theme_dark:             'Iluna',
+    theme_section_color:    'Kolorea',
 
-    // ── Gai-hautatzailea ─────────────────────────────────────────────────────
-    theme_btn_label:    'Gaia edo kolore-eskema aldatu',
-    theme_section_mode: 'Modua',
-    theme_auto:         'Automatikoa (sistema)',
-    theme_light:        'Argia',
-    theme_dark:         'Iluna',
-    theme_section_color:'Kolorea',
-    theme_blue:         'Urdina',
-    theme_green:        'Berdea',
-    theme_purple:       'Morea',
-    theme_orange:       'Laranja',
-    theme_red:          'Gorria',
+    // ── Modulu: Begizta ───────────────────────────────────────────────────────
+    mod_loop_title:         '🔁 Begizta mota',
+    btn_open_loop:          'Begizta irekia',
+    btn_closed_loop:        'Begizta itxia',
 
-    // ── Izenburuak ───────────────────────────────────────────────────────────
-    config_title:           '1. Begizta-konfigurazioa',
-    input_params_title:     '2. Sarrera mota $R(s)$',
-    controller_title:       'PID Kontrolagailua ($G_c(s)$)',
-    system_params_title:    '3. Sistemaren parametroak ($G_p(s)$)',
-    ft_title_static:        'Transferentzia-funtzioa (Formulak)',
-    ft_diagram_title:       'Bloke-diagrama',
-    chart_title:            'Sistemaren denbora-erantzuna $Y(t)$',
+    // ── Modulu: Seinu-sorgailua ───────────────────────────────────────────────
+    mod_input_title:        '📶 Seinu-sorgailua',
+    input_type_label:       'Seinu mota:',
+    input_step:             'Eskaloia',
+    input_ramp:             'Rampa',
+    input_sin:              'Sinusoidala',
+    step_min_label:         'Hasierako balioa $R_0$:',
+    step_max_label:         'Azken balioa $R_1$:',
+    ramp_slope_label:       'Malda $m$:',
+    sin_amp_label:          'Anplitudea $A$:',
+    sin_freq_label:         'Maiztasuna $\\omega$ (rad/s):',
 
-    // ── Hautatzaileak ────────────────────────────────────────────────────────
-    loop_type_label:    'Begizta mota:',
-    loop_open:          'Begizta irekia',
-    loop_closed:        'Begizta itxia (PID kontrolagailua)',
-    input_type_label:   'Sarrera mota $R(s)$: ',
-    input_step:         'Eskaloia',
-    input_ramp:         'Rampa',
-    input_sin:          'Sinusoidala',
-    system_order_label: 'Sistemaren ordena:',
-    order_first:        'Lehen ordena (LO)',
-    order_second:       'Bigarren ordena (BO)',
+    // ── Modulu: Kontrolagailua ────────────────────────────────────────────────
+    mod_pid_title:          '🎛️ Kontrolagailua',
+    controller_type_label:  'Kontrolagailu mota:',
+    controller_pid:         'PID',
+    controller_onoff:       'On/Off',
+    kc_label:               'Irabazia $K_c$:',
+    ti_label:               'Denbora integrala $T_i$:',
+    ti_inf_check:           '∞ (integralik gabe)',
+    tdc_label:              'Denbora deribatuak $T_{d,c}$:',
 
-    // ── Parametroak ──────────────────────────────────────────────────────────
-    step_min_label:     'Gutxieneko balioa ($R_{min}$):',
-    step_max_label:     'Gehieneko balioa ($R_{max}$):',
-    ramp_slope_label:   'Malda ($m$):',
-    sin_amp_label:      'Anplitudea ($A$):',
-    sin_freq_label:     'Maiztasuna ($\\omega$):',
-    kp_label:           'Irabazia ($K_p$) [0.1, 10]:',
-    tau_label:          'Denbora-konstantea ($\\tau$) [0.1, 100]:',
-    wn_label:           'Maiztasun naturala ($\\omega_n$) [0.1, 10]:',
-    zeta_label:         'Motigazioaren faktorea ($\\zeta$) [-5, 5]:',
-    td_label:           'Fisikoko denbora hila ($T_d$) [0.0, 20]:',
-    kc_label:           'Kontrol-irabazia ($K_c$) [0.1, 100]:',
-    ti_label:           'Denbora integrala ($T_i$) [0.001, $\\approx\\infty$]:',
-    tdc_label:          'Denbora deribatuak ($T_{d,c}$) [0.0, 100]:',
+    // ── Modulu: Prozesua ──────────────────────────────────────────────────────
+    mod_process_title:      '⚙️ Prozesua',
+    system_order_label:     'Ordena:',
+    order_first:            'Lehen ordena',
+    order_second:           'Bigarren ordena',
+    kp_label:               'Irabazia $K_p$:',
+    t1_label:               'Denbora-konstantea $T_1$ (s):',
+    t2_label:               'Denbora-konstantea $T_2$ (s):',
+    derived_title:          'Kalkulatutako parametroak:',
+    derived_wn:             'Maiztasun naturala $\\omega_n$:',
+    derived_zeta:           'Motigazioa $\\zeta$:',
+    derived_tau:            'Denbora-konstantea $\\tau$:',
 
-    // ── Formula estatikoak ───────────────────────────────────────────────────
-    ft_proc_title:          'T.F. Prozesua ($G_p(s)$):',
-    ft_cont_title_latex:    'Kontrolagailuaren transferentzia-funtzioa $G_c(s)$ (PID):',
-    ft_closed_loop_title:   'T.F. Begizta itxia (Orokorra):',
-    ft_open_loop_title:     'T.F. Begizta irekia (Orokorra):',
+    // ── Modulu: Atzerapena ────────────────────────────────────────────────────
+    mod_delay_title:        '⏱️ Prozesu-atzerapena',
+    td_label:               'Denbora hila $T_d$ (s):',
+
+    // ── Modulu: Errealimenua ──────────────────────────────────────────────────
+    mod_feedback_title:     '↩️ Errealimenua',
+    feedback_type_label:    'Mota:',
+    feedback_unity:         'Unitarioa $H(s)=1$',
+    feedback_delay:         'Atzerapen batekin',
+    th_label:               'Atzerapena $T_h$ (s):',
+
+    // ── TF eta diagrama ───────────────────────────────────────────────────────
+    ft_section_title:       'Transferentzia-funtzioa',
+    diagram_section_title:  'Bloke-diagrama',
+    ft_proc_title:          'Prozesua $G_p(s)$:',
+    ft_pid_title:           'Kontrolagailua $G_c(s)$:',
+    ft_open_loop_title:     'Begizta irekia $G(s)$:',
+    ft_closed_loop_title:   'Begizta itxia $G_{LC}(s)$:',
 
     // ── Botoiak ──────────────────────────────────────────────────────────────
-    button_simulate:         '➕ Simulatu eta lerroa gehitu',
-    button_download_image:   '🖼️ Deskargatu grafika (PNG)',
-    button_download_data:    '📊 Deskargatu datuak (CSV)',
-    button_clear_responses:  '🗑️ Ezabatu irteerak $Y(t)$',
-    button_clear_all:        '🗑️ Dena ezabatu',
+    button_simulate:        '➕ Simulatu eta gehitu',
+    button_download_image:  '🖼️ PNG deskargatu',
+    button_download_data:   '📊 CSV deskargatu',
+    button_clear_responses: '🗑️ Irteerak ezabatu',
+    button_clear_all:       '🗑️ Dena ezabatu',
 
-    // ── Kondaira eta ardatzak ─────────────────────────────────────────────────
-    input_label_r:              'Sarrera $R(t)$',
-    input_abbr_step:            'Eskaloia',
-    input_abbr_ramp:            'Rampa',
-    input_abbr_sin:             'Sinusoidala',
-    label_open_loop_abbr:       'Begizta irekia',
-    label_closed_loop_abbr:     'Begizta itxia',
-    label_first_order_abbr:     'LO',
-    label_second_order_abbr:    'BO',
-    chart_title_sim_prefix:     'Denbora-erantzuna ',
-    chart_title_sim_suffix:     ' simulaziorekin',
-    chart_empty_text:           'Simulatu erantzun bat hemen grafikoa ikusteko.',
-    chart_y_axis:               'Erantzuna $Y(t)$',
-    chart_x_axis:               'Denbora ($s$)',
-    tooltip_time:               'Denbora: ',
+    // ── Grafika ───────────────────────────────────────────────────────────────
+    chart_section_title:    'Denbora-erantzuna $Y(t)$',
+    input_label_r:          'Sarrera $R(t)$',
+    abbr_step:              'Eskaloia',
+    abbr_ramp:              'Rampa',
+    abbr_sin:               'Sinusoidala',
+    label_open_abbr:        'BI',
+    label_closed_abbr:      'BIT',
+    chart_title_prefix:     'Denbora-erantzuna — ',
+    chart_title_suffix:     ' kurba(k)',
+    chart_empty_text:       'Moduluak konfiguratu eta "Simulatu" sakatu.',
+    chart_y_axis:           'Y(t)',
+    chart_x_axis:           'Denbora (s)',
+    tooltip_time:           'Denbora: ',
 
-    // ── Bloke-diagrama ───────────────────────────────────────────────────────
-    diagram_title_open:     'Bloke-diagrama (Begizta irekia)',
-    diagram_title_closed:   'Bloke-diagrama (Begizta itxia - PID kontrolagailua)',
-    diagram_delay_block:    'Atzerapena $T_d$',
-    diagram_feedback_block: '$H(s)=1$',
+    // ── Begizta itxiaren parametro eratorriak ─────────────────────────────────
+    cl_wn_label:            'ωn begizta itxia',
+    cl_zeta_label:          'ζ begizta itxia',
+    cl_tau_label:           'τ begizta itxia',
+    cl_approx_note:         '(Hurbilketa — atzerapena/PIDak benetako poloak aldatzen ditu)',
 
-    // ── Oinorria ─────────────────────────────────────────────────────────────
-    credit_author:      'Julián Hernándezek egina.',
-    credit_description: 'Kontrol-sistemen analisirako Euler ereduaren simulazio-tresna.',
-    credit_no_data:     '',
+    // ── Oinorria ──────────────────────────────────────────────────────────────
+    credit_author:          'Julián Hernándezek egina.',
+    credit_description:     'Kontrol-sistemen simulagailu modularra (Euler eredua).',
 };

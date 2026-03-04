@@ -1,5 +1,5 @@
 /* ============================================================================
-   CONTROL-SIM — style.css
+   CONTROL-SIM v2 — style.css
    ============================================================================
    1.  Variables de tema y colores         ── INFRAESTRUCTURA
    2.  Estilos base                        ── INFRAESTRUCTURA
@@ -8,8 +8,17 @@
    5.  Selector de tema                    ── INFRAESTRUCTURA
    6.  Contenedor principal                ── INFRAESTRUCTURA
    7.  Pie de página                       ── INFRAESTRUCTURA
-   8.  Estilos propios de la app
-   9.  Media queries
+   8.  Fila de módulos
+   9.  Tarjetas de módulo
+  10.  Toggle switch
+  11.  Campos de formulario
+  12.  Info calculada (ζ, ωn)
+  13.  Botones de lazo
+  14.  Fila de FT + Diagrama
+  15.  Diagrama SVG
+  16.  Botones de acción
+  17.  Sección de gráfica
+  18.  Media queries
    ============================================================================ */
 
 
@@ -33,6 +42,17 @@
     --color-primary-light: #3b82f6;
 
     --color-warning: #dc2626;
+
+    /* módulos */
+    --mod-active-bg:     #e0f2fe;
+    --mod-active-border: #0284c7;
+    --mod-off-bg:        #f8fafc;
+    --mod-off-border:    #cbd5e1;
+
+    /* colores especiales de bloques */
+    --color-pid:    #9333ea;
+    --color-delay:  #ea580c;
+    --color-fb:     #16a34a;
 }
 
 [data-theme="dark"] {
@@ -42,14 +62,19 @@
     --text-primary:   #e2e8f0;
     --text-secondary: #94a3b8;
     --border-color: #475569;
-    --shadow:       rgba(0, 0, 0, 0.30);
+    --shadow:       rgba(0, 0, 0, 0.35);
+
+    --mod-active-bg:     #0c2a42;
+    --mod-active-border: #0284c7;
+    --mod-off-bg:        #1e293b;
+    --mod-off-border:    #475569;
 }
 
-[data-color-scheme="blue"]   { --color-primary:#1e40af; --color-primary-hover:#1e3a8a; --color-primary-light:#3b82f6; }
-[data-color-scheme="green"]  { --color-primary:#16a34a; --color-primary-hover:#15803d; --color-primary-light:#22c55e; }
-[data-color-scheme="purple"] { --color-primary:#9333ea; --color-primary-hover:#7e22ce; --color-primary-light:#a855f7; }
-[data-color-scheme="orange"] { --color-primary:#ea580c; --color-primary-hover:#c2410c; --color-primary-light:#f97316; }
-[data-color-scheme="red"]    { --color-primary:#dc2626; --color-primary-hover:#b91c1c; --color-primary-light:#ef4444; }
+[data-color-scheme="blue"]   { --color-primary: #1e40af; --color-primary-hover: #1e3a8a; --color-primary-light: #3b82f6; }
+[data-color-scheme="green"]  { --color-primary: #16a34a; --color-primary-hover: #15803d; --color-primary-light: #22c55e; }
+[data-color-scheme="purple"] { --color-primary: #9333ea; --color-primary-hover: #7e22ce; --color-primary-light: #a855f7; }
+[data-color-scheme="orange"] { --color-primary: #ea580c; --color-primary-hover: #c2410c; --color-primary-light: #f97316; }
+[data-color-scheme="red"]    { --color-primary: #dc2626; --color-primary-hover: #b91c1c; --color-primary-light: #ef4444; }
 
 
 /* ============================================================================
@@ -75,7 +100,7 @@ body {
 
 header {
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
-    padding: 20px 25px;
+    padding: 16px 25px;
     color: white;
     box-shadow: 0 2px 8px var(--shadow);
     position: fixed;
@@ -84,7 +109,7 @@ header {
 }
 
 .header-wrapper {
-    max-width: 1400px;
+    max-width: 1500px;
     margin: 0 auto;
     position: relative;
     display: flex;
@@ -94,8 +119,8 @@ header {
 
 header h1 {
     margin: 0;
-    font-size: 1.6em;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    font-size: 1.5em;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
     color: white;
     border: none;
     padding: 0;
@@ -180,7 +205,6 @@ header h1 {
 .lang-option:hover, .lang-option.active { background: var(--bg-tertiary); }
 .lang-option.active { font-weight: 600; }
 .lang-name { color: var(--text-secondary); font-size: 0.88em; flex: 1; text-align: right; }
-.lang-option .flag-svg { border-color: var(--border-color); }
 
 
 /* ============================================================================
@@ -270,12 +294,12 @@ header h1 {
    ============================================================================ */
 
 .container {
-    max-width: 1400px;
-    margin-top: 85px;
+    max-width: 1500px;
+    margin-top: 75px;
     margin-bottom: 40px;
     margin-left: auto;
     margin-right: auto;
-    padding: 25px;
+    padding: 20px 24px;
     background-color: var(--bg-secondary);
     border-radius: 10px;
     box-shadow: 0 4px 12px var(--shadow);
@@ -286,15 +310,16 @@ header h1 {
    7. PIE DE PÁGINA    ── INFRAESTRUCTURA ──
    ============================================================================ */
 
-footer { margin-top: 0; padding-top: 0; border-top: none; }
+footer {
+    margin-top: 24px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border-color);
+}
 
 .credit-text-main {
     text-align: right;
     font-size: 0.8em;
     color: var(--text-secondary);
-    margin-top: 30px;
-    padding-top: 10px;
-    border-top: 1px dashed var(--border-color);
 }
 
 .app-version {
@@ -311,147 +336,397 @@ footer { margin-top: 0; padding-top: 0; border-top: none; }
 
 
 /* ============================================================================
-   8. ESTILOS PROPIOS DE LA APP
+   8. FILA DE MÓDULOS
    ============================================================================ */
 
-h2 {
+.modules-row {
+    display: grid;
+    grid-template-columns: 148px 1fr 1fr 1fr 1fr 1fr;
+    gap: 12px;
+    align-items: start;
+    margin-bottom: 16px;
+}
+
+
+/* ============================================================================
+   9. TARJETAS DE MÓDULO
+   ============================================================================ */
+
+.module-card {
+    border-radius: 10px;
+    padding: 13px 12px;
+    border: 2px solid var(--mod-off-border);
+    background: var(--mod-off-bg);
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.module-card.active {
+    border-color: var(--mod-active-border);
+    background: var(--mod-active-bg);
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.13);
+}
+
+/* Módulos siempre activos (lazo, señal) */
+.module-card.always-on {
+    border-color: var(--color-primary);
+    background: var(--mod-active-bg);
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.10);
+}
+
+/* Cuando un módulo está desactivado, su body queda atenuado */
+.module-card:not(.active):not(.always-on) .module-body {
+    opacity: 0.42;
+    pointer-events: none;
+}
+
+.module-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 6px;
+}
+
+.module-title {
+    font-weight: 700;
+    font-size: 0.87em;
     color: var(--color-primary);
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 1.3em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
-h3 {
-    color: var(--color-primary-light);
-    margin-top: 15px;
-    font-size: 1.1em;
-}
-
-.main-grid-new {
+.module-body {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 4px;
 }
 
-.config-row-1 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+
+/* ============================================================================
+  10. TOGGLE SWITCH
+   ============================================================================ */
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 22px;
+    flex-shrink: 0;
 }
 
-.config-row-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #cbd5e1;
+    border-radius: 22px;
+    transition: 0.25s;
 }
 
-.config-row-3 { padding: 10px 0; }
-
-.col-panel, .ft-diagram-section {
-    padding: 20px;
-    background-color: var(--bg-tertiary);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px var(--shadow);
+.toggle-slider::before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.25s;
 }
 
-.input-group, .system-group {
-    margin-bottom: 15px;
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-}
+.toggle-switch input:checked + .toggle-slider { background: var(--color-primary); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(16px); }
 
-.selector-label {
+
+/* ============================================================================
+  11. CAMPOS DE FORMULARIO
+   ============================================================================ */
+
+.field-label {
     display: block;
+    font-size: 0.80em;
     font-weight: 600;
-    margin-bottom: 5px;
-    margin-top: 10px;
-    font-size: 0.95em;
-    color: var(--text-primary);
+    color: var(--text-secondary);
+    margin-top: 7px;
+    margin-bottom: 2px;
 }
 
-.input-param, .selector-select {
-    width: calc(100% - 10px);
-    padding: 8px;
+.field-input,
+.field-select {
+    width: 100%;
+    padding: 5px 7px;
     border: 1px solid var(--border-color);
-    border-radius: 4px;
-    box-sizing: border-box;
-    margin-bottom: 5px;
-    background-color: var(--bg-secondary);
+    border-radius: 5px;
+    background: var(--bg-secondary);
     color: var(--text-primary);
+    font-size: 0.87em;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.button-group-full {
+.field-input:focus,
+.field-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.14);
+}
+
+.ti-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.ti-row .field-input { flex: 1; }
+
+.ti-inf-label {
+    font-size: 0.78em;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    white-space: nowrap;
+    color: var(--text-secondary);
+}
+
+
+/* ============================================================================
+  12. INFO CALCULADA (ζ, ωn)
+   ============================================================================ */
+
+.derived-info {
+    margin-top: 8px;
+    padding: 7px 9px;
+    background: rgba(30, 64, 175, 0.07);
+    border-radius: 6px;
+    font-size: 0.79em;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    border-left: 3px solid var(--color-primary-light);
+}
+
+.derived-info .derived-value {
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+
+/* ============================================================================
+  13. BOTONES DE LAZO
+   ============================================================================ */
+
+.loop-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.loop-btn {
+    padding: 9px 8px;
+    border: 2px solid var(--border-color);
+    border-radius: 7px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.84em;
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+    line-height: 1.3;
+}
+
+.loop-btn:hover { border-color: var(--color-primary); }
+
+.loop-btn.selected {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+    color: white;
+}
+
+
+/* ============================================================================
+  14. FILA DE FT + DIAGRAMA
+   ============================================================================ */
+
+.info-row {
+    display: grid;
+    grid-template-columns: 1fr 1.8fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.info-panel {
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    padding: 15px 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 1px 3px var(--shadow);
+}
+
+.info-panel h2 {
+    color: var(--color-primary);
+    margin: 0 0 10px;
+    font-size: 1.0em;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 6px;
+}
+
+#ftDisplay {
+    font-size: 0.93em;
+    text-align: center;
+    color: var(--text-primary);
+    min-height: 60px;
+}
+
+#ftDisplay h3 {
+    color: var(--color-primary-light);
+    font-size: 0.88em;
+    margin: 8px 0 2px;
+    text-align: left;
+}
+
+
+/* ============================================================================
+  15. DIAGRAMA SVG
+   ============================================================================ */
+
+#diagramSvg {
+    width: 100%;
+    height: 200px;
+    overflow: visible;
+    display: block;
+}
+
+
+/* ============================================================================
+  16. BOTONES DE ACCIÓN
+   ============================================================================ */
+
+.actions-row {
     display: flex;
     gap: 10px;
     justify-content: center;
     flex-wrap: wrap;
+    margin-bottom: 16px;
+    padding: 8px 0;
 }
 
-.button-group-full .btn {
-    padding: 10px 15px;
-    font-size: 1em;
+.btn {
+    padding: 10px 16px;
+    font-size: 0.93em;
     cursor: pointer;
     border: none;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-    font-weight: bold;
-    min-width: 150px;
+    border-radius: 6px;
+    font-weight: 700;
+    transition: background-color 0.2s, transform 0.1s;
+    min-width: 128px;
 }
 
-.btn-primary { background-color: var(--color-primary); color: white; }
-.btn-primary:hover { background-color: var(--color-primary-hover); }
-.btn-secondary { background-color: var(--color-primary-light); color: white; }
-.btn-secondary:hover { background-color: var(--color-primary); }
-.btn-danger { background-color: #ef4444; color: white; }
-.btn-danger:hover { background-color: #dc2626; }
+.btn:active { transform: scale(0.97); }
 
-.chart-section {
+.btn-primary   { background: var(--color-primary);       color: white; }
+.btn-primary:hover { background: var(--color-primary-hover); }
+
+.btn-secondary { background: var(--color-primary-light); color: white; }
+.btn-secondary:hover { background: var(--color-primary); }
+
+.btn-danger    { background: #ef4444; color: white; }
+.btn-danger:hover  { background: #dc2626; }
+
+
+/* ============================================================================
+  17. SECCIÓN DE GRÁFICA
+   ============================================================================ */
+
+.chart-section { position: relative; }
+
+.chart-section h2 {
+    color: var(--color-primary);
+    margin: 0 0 8px;
+    font-size: 1.0em;
+}
+
+.chart-canvas-wrapper {
+    height: 510px;
+    min-height: 360px;
     position: relative;
-    height: 550px;
-    min-height: 400px;
 }
 
-.full-chart {
+#responseChart {
     width: 100%;
     height: 100%;
     display: block;
 }
 
-#ftDisplay {
-    margin: 15px 0;
-    text-align: center;
-    font-size: 1.1em;
-    color: var(--text-primary);
-}
 
-#diagramBlock {
-    background-color: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
-    padding: 15px;
-    border-radius: 6px;
-    font-family: monospace;
-    white-space: pre;
-    overflow-x: auto;
-    font-size: 0.9em;
-    margin-top: 10px;
-    color: var(--text-primary);
+/* ── Parámetros derivados del lazo cerrado (en ftDisplay) ── */
+.cl-derived-box {
+    margin-top: 8px;
+    padding: 7px 10px;
+    background: rgba(22, 163, 74, 0.08);
+    border-left: 3px solid #16a34a;
+    border-radius: 5px;
+    font-size: 0.85em;
+    line-height: 1.8;
+    text-align: left;
+}
+.cl-derived-label {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+.cl-derived-value {
+    font-weight: 700;
+    color: #16a34a;
+}
+.cl-derived-note {
+    font-size: 0.82em;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-top: 3px;
 }
 
 
 /* ============================================================================
-   9. MEDIA QUERIES
+  18. MEDIA QUERIES
    ============================================================================ */
 
-@media (max-width: 1200px) {
-    .config-row-1 { grid-template-columns: 1fr 1fr; }
+@media (max-width: 1300px) {
+    .modules-row {
+        grid-template-columns: 145px 1fr 1fr 1fr;
+    }
 }
 
-@media (max-width: 768px) {
-    .config-row-1, .config-row-2 { grid-template-columns: 1fr; }
-    .button-group-full { flex-direction: column; }
-    .button-group-full .btn { width: 100%; }
-    .header-controls { position: static; transform: none; justify-content: center; margin-top: 10px; }
-    header { padding: 15px; }
+@media (max-width: 960px) {
+    .modules-row {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+    .info-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .modules-row {
+        grid-template-columns: 1fr 1fr;
+    }
+    .actions-row .btn {
+        min-width: 110px;
+        font-size: 0.85em;
+        padding: 9px 10px;
+    }
+    .header-controls {
+        position: static;
+        transform: none;
+        justify-content: center;
+        margin-top: 8px;
+    }
+    header { padding: 12px 16px; }
     .header-wrapper { flex-direction: column; }
+}
+
+@media (max-width: 420px) {
+    .modules-row { grid-template-columns: 1fr; }
 }
