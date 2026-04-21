@@ -1,60 +1,68 @@
 /* ============================================================================
    CONTROL-SIM v2 — style.css
    ============================================================================
-   1.  Variables de tema y colores         ── INFRAESTRUCTURA
-   2.  Estilos base                        ── INFRAESTRUCTURA
-   3.  Encabezado                          ── INFRAESTRUCTURA
-   4.  Selector de idioma                  ── INFRAESTRUCTURA
-   5.  Selector de tema                    ── INFRAESTRUCTURA
-   6.  Contenedor principal                ── INFRAESTRUCTURA
-   7.  Pie de página                       ── INFRAESTRUCTURA
-   8.  Fila de módulos
-   9.  Tarjetas de módulo
-  10.  Toggle switch
-  11.  Campos de formulario
-  12.  Info calculada (ζ, ωn)
-  13.  Botones de lazo
-  14.  Fila de FT + Diagrama
-  15.  Diagrama SVG
-  16.  Botones de acción
-  17.  Sección de gráfica
-  18.  Media queries
+   Secciones:
+    1.  Variables de tema y colores   (tokens CSS, modo claro/oscuro, esquemas)
+    2.  Estilos base                  (reset, body)
+    3.  Encabezado                    (header fijo, título, controles derecha)
+    4.  Selector de idioma            (botón + menú desplegable + banderas)
+    5.  Selector de tema              (botón + menú modo/color)
+    6.  Contenedor principal          (max-width, margen bajo el header)
+    7.  Pie de página
+    8.  Fila de módulos               (grid de tarjetas)
+    9.  Tarjetas de módulo            (estados: off / active / always-on)
+   10.  Toggle switch
+   11.  Campos de formulario          (label, input, select, fila Ti)
+   12.  Info calculada                (ζ, ωn en la tarjeta de proceso)
+   13.  Botones de lazo               (Abierto / Cerrado)
+   14.  Fila FT + Diagrama            (panel izquierdo y derecho)
+   15.  Diagrama SVG de bloques
+   16.  Botones de acción             (Simular, Descargar, Borrar)
+   17.  Sección de gráfica
+   18.  Parámetros derivados lazo cerrado (caja verde en ftDisplay)
+   19.  Media queries                 (responsive: 1300 / 960 / 640 / 420 px)
    ============================================================================ */
 
 
 /* ============================================================================
-   1. VARIABLES DE TEMA Y COLORES    ── INFRAESTRUCTURA ──
+   1. VARIABLES DE TEMA Y COLORES
    ============================================================================ */
 
 :root {
+    /* Fondos */
     --bg-primary:   #f0f2f5;
     --bg-secondary: #ffffff;
     --bg-tertiary:  #f1f5f9;
 
+    /* Texto */
     --text-primary:   #333333;
     --text-secondary: #64748b;
 
+    /* Borde y sombra */
     --border-color: #dddddd;
     --shadow:       rgba(0, 0, 0, 0.10);
 
+    /* Color de acento principal (sobreescrito por data-color-scheme) */
     --color-primary:       #1e40af;
     --color-primary-hover: #1e3a8a;
     --color-primary-light: #3b82f6;
 
+    /* Color de peligro (botones borrar) */
     --color-warning: #dc2626;
 
-    /* módulos */
+    /* Estados de las tarjetas de módulo */
     --mod-active-bg:     #e0f2fe;
     --mod-active-border: #0284c7;
     --mod-off-bg:        #f8fafc;
     --mod-off-border:    #cbd5e1;
 
-    /* colores especiales de bloques */
-    --color-pid:    #9333ea;
-    --color-delay:  #ea580c;
-    --color-fb:     #16a34a;
+    /* Colores fijos de bloques especiales (PID, retardo, realimentación) */
+    --color-pid:   #9333ea;
+    --color-delay: #ea580c;
+    --color-fb:    #16a34a;
 }
 
+/* Modo oscuro */
 [data-theme="dark"] {
     --bg-primary:   #0f172a;
     --bg-secondary: #1e293b;
@@ -63,13 +71,13 @@
     --text-secondary: #94a3b8;
     --border-color: #475569;
     --shadow:       rgba(0, 0, 0, 0.35);
-
     --mod-active-bg:     #0c2a42;
     --mod-active-border: #0284c7;
     --mod-off-bg:        #1e293b;
     --mod-off-border:    #475569;
 }
 
+/* Esquemas de color del acento principal */
 [data-color-scheme="blue"]   { --color-primary: #1e40af; --color-primary-hover: #1e3a8a; --color-primary-light: #3b82f6; }
 [data-color-scheme="green"]  { --color-primary: #16a34a; --color-primary-hover: #15803d; --color-primary-light: #22c55e; }
 [data-color-scheme="purple"] { --color-primary: #9333ea; --color-primary-hover: #7e22ce; --color-primary-light: #a855f7; }
@@ -78,7 +86,7 @@
 
 
 /* ============================================================================
-   2. ESTILOS BASE    ── INFRAESTRUCTURA ──
+   2. ESTILOS BASE
    ============================================================================ */
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -95,7 +103,7 @@ body {
 
 
 /* ============================================================================
-   3. ENCABEZADO    ── INFRAESTRUCTURA ──
+   3. ENCABEZADO
    ============================================================================ */
 
 header {
@@ -108,6 +116,7 @@ header {
     z-index: 100;
 }
 
+/* Centra el título y ancla los controles a la derecha */
 .header-wrapper {
     max-width: 1500px;
     margin: 0 auto;
@@ -139,7 +148,7 @@ header h1 {
 
 
 /* ============================================================================
-   4. SELECTOR DE IDIOMA    ── INFRAESTRUCTURA ──
+   4. SELECTOR DE IDIOMA
    ============================================================================ */
 
 .language-selector { position: relative; }
@@ -161,9 +170,13 @@ header h1 {
 }
 
 .lang-button:hover { background: rgba(255,255,255,0.3); }
+
 .lang-chevron { font-size: 0.8em; opacity: 0.8; }
+
+/* Contenedor interno del botón: bandera + código */
 .lang-option-inner { display: flex; align-items: center; gap: 6px; }
 
+/* Imagen SVG de bandera (usada tanto en el botón como en las opciones del menú) */
 .flag-svg {
     width: 28px;
     height: 19px;
@@ -175,6 +188,7 @@ header h1 {
 
 .lang-code { font-weight: 700; letter-spacing: 0.5px; }
 
+/* Menú desplegable de idiomas */
 .lang-menu {
     position: absolute;
     right: 0;
@@ -190,6 +204,7 @@ header h1 {
 
 .lang-menu.hidden { display: none; }
 
+/* Cada fila del menú de idiomas */
 .lang-option {
     display: flex;
     align-items: center;
@@ -202,13 +217,20 @@ header h1 {
     transition: background 0.15s;
 }
 
-.lang-option:hover, .lang-option.active { background: var(--bg-tertiary); }
-.lang-option.active { font-weight: 600; }
-.lang-name { color: var(--text-secondary); font-size: 0.88em; flex: 1; text-align: right; }
+.lang-option:hover,
+.lang-option.active { background: var(--bg-tertiary); }
+.lang-option.active  { font-weight: 600; }
+
+.lang-name {
+    color: var(--text-secondary);
+    font-size: 0.88em;
+    flex: 1;
+    text-align: right;
+}
 
 
 /* ============================================================================
-   5. SELECTOR DE TEMA    ── INFRAESTRUCTURA ──
+   5. SELECTOR DE TEMA
    ============================================================================ */
 
 .theme-selector { position: relative; }
@@ -226,6 +248,7 @@ header h1 {
 
 .theme-button:hover { background: rgba(255,255,255,0.3); transform: scale(1.05); }
 
+/* Menú desplegable de tema */
 .theme-menu {
     position: absolute;
     right: 0;
@@ -241,6 +264,7 @@ header h1 {
 
 .theme-menu.hidden { display: none; }
 
+/* Título de sección dentro del menú (MODO / COLOR) */
 .theme-section-title {
     font-size: 0.75em;
     font-weight: bold;
@@ -263,9 +287,20 @@ header h1 {
 
 .theme-option:hover { background: var(--bg-tertiary); }
 .theme-icon { font-size: 1.2em; }
-.theme-divider { margin: 8px 0; border: none; border-top: 1px solid var(--border-color); }
 
-.color-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 4px; }
+.theme-divider {
+    margin: 8px 0;
+    border: none;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Grid de muestras de color (3 columnas) */
+.color-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 4px;
+}
 
 .color-option {
     display: flex;
@@ -280,6 +315,7 @@ header h1 {
 .color-option:hover { background: var(--bg-tertiary); transform: scale(1.05); }
 .color-option.active { border-color: var(--color-primary); }
 
+/* Muestra de color: dos rectángulos (claro + oscuro del esquema) */
 .color-preview {
     width: 20px;
     height: 20px;
@@ -290,12 +326,12 @@ header h1 {
 
 
 /* ============================================================================
-   6. CONTENEDOR PRINCIPAL    ── INFRAESTRUCTURA ──
+   6. CONTENEDOR PRINCIPAL
    ============================================================================ */
 
 .container {
     max-width: 1500px;
-    margin-top: 75px;
+    margin-top: 75px;   /* compensa el header fijo */
     margin-bottom: 40px;
     margin-left: auto;
     margin-right: auto;
@@ -307,7 +343,7 @@ header h1 {
 
 
 /* ============================================================================
-   7. PIE DE PÁGINA    ── INFRAESTRUCTURA ──
+   7. PIE DE PÁGINA
    ============================================================================ */
 
 footer {
@@ -322,6 +358,7 @@ footer {
     color: var(--text-secondary);
 }
 
+/* Badge de versión */
 .app-version {
     margin-left: 10px;
     padding: 1px 7px;
@@ -339,6 +376,7 @@ footer {
    8. FILA DE MÓDULOS
    ============================================================================ */
 
+/* Grid de 6 columnas: [lazo fijo] [señal fijo] [PID] [proceso] [retardo] [realim.] */
 .modules-row {
     display: grid;
     grid-template-columns: 148px 1fr 1fr 1fr 1fr 1fr;
@@ -352,6 +390,7 @@ footer {
    9. TARJETAS DE MÓDULO
    ============================================================================ */
 
+/* Estado por defecto: módulo desactivado */
 .module-card {
     border-radius: 10px;
     padding: 13px 12px;
@@ -360,25 +399,27 @@ footer {
     transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
 }
 
+/* Módulo activado mediante toggle */
 .module-card.active {
     border-color: var(--mod-active-border);
     background: var(--mod-active-bg);
     box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.13);
 }
 
-/* Módulos siempre activos (lazo, señal) */
+/* Módulos siempre activos (Tipo de Lazo, Generador de Señal) */
 .module-card.always-on {
     border-color: var(--color-primary);
     background: var(--mod-active-bg);
     box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.10);
 }
 
-/* Cuando un módulo está desactivado, su body queda atenuado */
+/* Body de un módulo desactivado: atenuado e ininteractuable */
 .module-card:not(.active):not(.always-on) .module-body {
     opacity: 0.42;
     pointer-events: none;
 }
 
+/* Cabecera de la tarjeta: título a la izquierda, toggle a la derecha */
 .module-header {
     display: flex;
     align-items: center;
@@ -415,6 +456,7 @@ footer {
     flex-shrink: 0;
 }
 
+/* Input oculto; solo la pista visual es visible */
 .toggle-switch input { opacity: 0; width: 0; height: 0; }
 
 .toggle-slider {
@@ -426,6 +468,7 @@ footer {
     transition: 0.25s;
 }
 
+/* Círculo deslizante */
 .toggle-slider::before {
     position: absolute;
     content: "";
@@ -438,8 +481,8 @@ footer {
     transition: 0.25s;
 }
 
-.toggle-switch input:checked + .toggle-slider { background: var(--color-primary); }
-.toggle-switch input:checked + .toggle-slider::before { transform: translateX(16px); }
+.toggle-switch input:checked + .toggle-slider             { background: var(--color-primary); }
+.toggle-switch input:checked + .toggle-slider::before     { transform: translateX(16px); }
 
 
 /* ============================================================================
@@ -474,6 +517,7 @@ footer {
     box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.14);
 }
 
+/* Fila especial Ti: input numérico + checkbox "∞" en línea */
 .ti-row {
     display: flex;
     gap: 6px;
@@ -494,7 +538,7 @@ footer {
 
 
 /* ============================================================================
-  12. INFO CALCULADA (ζ, ωn)
+  12. INFO CALCULADA (ζ, ωn en la tarjeta de proceso)
    ============================================================================ */
 
 .derived-info {
@@ -515,7 +559,7 @@ footer {
 
 
 /* ============================================================================
-  13. BOTONES DE LAZO
+  13. BOTONES DE LAZO (Abierto / Cerrado)
    ============================================================================ */
 
 .loop-buttons {
@@ -538,7 +582,7 @@ footer {
     line-height: 1.3;
 }
 
-.loop-btn:hover { border-color: var(--color-primary); }
+.loop-btn:hover  { border-color: var(--color-primary); }
 
 .loop-btn.selected {
     border-color: var(--color-primary);
@@ -548,14 +592,16 @@ footer {
 
 
 /* ============================================================================
-  14. FILA DE FT + DIAGRAMA
+  14. FILA DE ECUACIONES + DIAGRAMA
    ============================================================================ */
 
+/* Dos columnas: ecuaciones (45%) y diagrama (55%) */
 .info-row {
     display: grid;
-    grid-template-columns: 1fr 1.8fr;
+    grid-template-columns: 1fr 1.2fr;
     gap: 12px;
     margin-bottom: 16px;
+    align-items: start;   /* cada panel tiene su altura natural */
 }
 
 .info-panel {
@@ -564,6 +610,8 @@ footer {
     padding: 15px 16px;
     border: 1px solid var(--border-color);
     box-shadow: 0 1px 3px var(--shadow);
+    display: flex;
+    flex-direction: column;
 }
 
 .info-panel h2 {
@@ -572,30 +620,108 @@ footer {
     font-size: 1.0em;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 6px;
+    flex-shrink: 0;
 }
 
+/* Panel de ecuaciones: alineación izquierda, cada ecuación en su propia línea */
 #ftDisplay {
     font-size: 0.93em;
-    text-align: center;
+    text-align: left;
     color: var(--text-primary);
     min-height: 60px;
+    flex: 1;
+    overflow-y: auto;
 }
 
-#ftDisplay h3 {
-    color: var(--color-primary-light);
+/* Línea de parámetros activos encima de las ecuaciones */
+.eq-params {
     font-size: 0.88em;
-    margin: 8px 0 2px;
+    color: var(--color-primary);
+    background: rgba(var(--color-primary-rgb, 30,64,175), 0.06);
+    border-left: 3px solid var(--color-primary);
+    border-radius: 4px;
+    padding: 5px 10px;
+    margin-bottom: 4px;
+    overflow-x: auto;
+}
+
+/* Cada bloque de ecuación (Gp, Gc, y(t)…) */
+.eq-block {
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.eq-block:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* Etiqueta pequeña encima de la ecuación (ej: "Proceso", "Controlador") */
+.eq-label {
+    font-size: 0.75em;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+}
+
+/* La ecuación combinada simbólico = numérico */
+.eq-line {
+    /* MathJax renderiza inline; dejamos que fluya a la izquierda */
+    display: block;
+    overflow-x: auto;
+}
+
+/* Nota/condición debajo de la ecuación (ej: condición de validez, φ, ζ…) */
+.eq-note {
+    font-size: 0.76em;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-top: 2px;
+}
+
+/* Mensaje cuando no hay expresión analítica disponible */
+.eq-unavailable {
+    font-size: 0.83em;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* Separador visual entre grupos (FT ↔ y(t)) */
+.eq-section-sep {
+    border: none;
+    border-top: 2px solid var(--border-color);
+    margin: 10px 0;
+}
+
+/* Caja de parámetros derivados de lazo cerrado (heredada de v2) */
+.cl-derived-box {
+    margin-top: 8px;
+    padding: 7px 10px;
+    background: rgba(22, 163, 74, 0.08);
+    border-left: 3px solid #16a34a;
+    border-radius: 5px;
+    font-size: 0.85em;
+    line-height: 1.8;
     text-align: left;
 }
 
+.cl-derived-label { color: var(--text-secondary); font-weight: 600; }
+.cl-derived-value { font-weight: 700; color: #16a34a; }
+.cl-derived-note  { font-size: 0.82em; color: var(--text-secondary); font-style: italic; margin-top: 3px; }
+
 
 /* ============================================================================
-  15. DIAGRAMA SVG
+  15. DIAGRAMA SVG DE BLOQUES
    ============================================================================ */
 
 #diagramSvg {
     width: 100%;
-    height: 200px;
+    height: 220px;
+    min-height: 180px;
     overflow: visible;
     display: block;
 }
@@ -627,14 +753,15 @@ footer {
 
 .btn:active { transform: scale(0.97); }
 
-.btn-primary   { background: var(--color-primary);       color: white; }
-.btn-primary:hover { background: var(--color-primary-hover); }
+/* Variantes de botón */
+.btn-primary            { background: var(--color-primary);       color: white; }
+.btn-primary:hover      { background: var(--color-primary-hover); }
 
-.btn-secondary { background: var(--color-primary-light); color: white; }
-.btn-secondary:hover { background: var(--color-primary); }
+.btn-secondary          { background: var(--color-primary-light); color: white; }
+.btn-secondary:hover    { background: var(--color-primary); }
 
-.btn-danger    { background: #ef4444; color: white; }
-.btn-danger:hover  { background: #dc2626; }
+.btn-danger             { background: #ef4444; color: white; }
+.btn-danger:hover       { background: #dc2626; }
 
 
 /* ============================================================================
@@ -649,6 +776,7 @@ footer {
     font-size: 1.0em;
 }
 
+/* Wrapper con altura fija para que Chart.js respete el aspecto */
 .chart-canvas-wrapper {
     height: 510px;
     min-height: 360px;
@@ -662,43 +790,19 @@ footer {
 }
 
 
-/* ── Parámetros derivados del lazo cerrado (en ftDisplay) ── */
-.cl-derived-box {
-    margin-top: 8px;
-    padding: 7px 10px;
-    background: rgba(22, 163, 74, 0.08);
-    border-left: 3px solid #16a34a;
-    border-radius: 5px;
-    font-size: 0.85em;
-    line-height: 1.8;
-    text-align: left;
-}
-.cl-derived-label {
-    color: var(--text-secondary);
-    font-weight: 600;
-}
-.cl-derived-value {
-    font-weight: 700;
-    color: #16a34a;
-}
-.cl-derived-note {
-    font-size: 0.82em;
-    color: var(--text-secondary);
-    font-style: italic;
-    margin-top: 3px;
-}
-
 
 /* ============================================================================
-  18. MEDIA QUERIES
+  19. MEDIA QUERIES (responsive)
    ============================================================================ */
 
+/* Pantallas medianas: colapsar a 4 columnas */
 @media (max-width: 1300px) {
     .modules-row {
         grid-template-columns: 145px 1fr 1fr 1fr;
     }
 }
 
+/* Tablets: 3 columnas y FT+diagrama en una sola columna */
 @media (max-width: 960px) {
     .modules-row {
         grid-template-columns: 1fr 1fr 1fr;
@@ -708,6 +812,7 @@ footer {
     }
 }
 
+/* Móvil grande: 2 columnas, botones más pequeños, header apilado */
 @media (max-width: 640px) {
     .modules-row {
         grid-template-columns: 1fr 1fr;
@@ -717,16 +822,18 @@ footer {
         font-size: 0.85em;
         padding: 9px 10px;
     }
+    /* El header pasa a layout vertical en móvil */
     .header-controls {
         position: static;
         transform: none;
         justify-content: center;
         margin-top: 8px;
     }
-    header { padding: 12px 16px; }
+    header          { padding: 12px 16px; }
     .header-wrapper { flex-direction: column; }
 }
 
+/* Móvil pequeño: 1 columna */
 @media (max-width: 420px) {
     .modules-row { grid-template-columns: 1fr; }
 }

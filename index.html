@@ -5,26 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-lang-key="document_title">Simulador de Sistemas de Control</title>
 
-    <!-- Chart.js -->
+    <!-- Chart.js: renderizado de la gráfica temporal -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-    <!-- Idiomas (antes de script.js para que estén disponibles) -->
+    <!-- Traducciones: deben cargarse antes de script.js para estar disponibles en window -->
     <script src="lang/es.js"></script>
     <script src="lang/eu.js"></script>
     <script src="lang/en.js"></script>
 
-    <!-- Lógica principal (aplica tema antes del DOM para evitar flash) -->
+    <!-- Lógica principal: se carga en <head> para que applyStoredTheme()
+         se ejecute antes del primer paint y evite el flash de tema incorrecto -->
     <script src="script.js"></script>
 
-    <!-- Estilos -->
+    <!-- Estilos: después de script.js para que el tema ya esté aplicado -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- MathJax -->
+    <!-- MathJax: renderizado de fórmulas LaTeX en la sección de FT -->
     <script>
         MathJax = {
-            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
-            svg: { fontCache: 'global' },
-            startup: { typeset: false }
+            tex:     { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+            svg:     { fontCache: 'global' },
+            startup: { typeset: false }  // typeset manual para controlar cuándo se lanza
         };
     </script>
     <script id="MathJax-script" async
@@ -33,21 +34,25 @@
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     CABECERA
-     ═══════════════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     CABECERA FIJA
+     Contiene el título de la app y los controles de idioma y tema.
+     ═══════════════════════════════════════════════════════════════════════════ -->
 <header>
     <div class="header-wrapper">
         <h1 data-lang-key="title_main">⚙️ Simulador de Sistemas de Control</h1>
 
         <div class="header-controls">
 
-            <!-- ── Selector de idioma ── -->
+            <!-- ── Selector de idioma ──────────────────────────────────────── -->
             <div class="language-selector" id="languageSelectorWrapper">
+
+                <!-- Botón que muestra la bandera e idioma activos -->
                 <button id="langButton" class="lang-button" onclick="toggleLangMenu()"
                         aria-haspopup="true" aria-expanded="false"
                         aria-label="Seleccionar idioma">
                     <span id="langButtonContent" class="lang-option-inner">
+                        <!-- Bandera España (por defecto) — se actualiza vía JS al cargar -->
                         <svg class="flag-svg" width="28" height="19" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">
                             <rect width="60" height="40" fill="#AA151B"/>
                             <rect y="10" width="60" height="20" fill="#F1BF00"/>
@@ -56,36 +61,70 @@
                     </span>
                     <span class="lang-chevron">▾</span>
                 </button>
+
+                <!-- Menú desplegable con las tres opciones de idioma -->
                 <div id="langMenu" class="lang-menu hidden" role="menu">
-                    <div class="lang-option" role="menuitem" onclick="setLanguage('es'); toggleLangMenu()" data-lang="es">
+
+                    <!-- Español -->
+                    <div class="lang-option" role="menuitem"
+                         onclick="setLanguage('es'); toggleLangMenu()" data-lang="es">
                         <span class="lang-option-inner">
-                            <svg class="flag-svg" width="28" height="19" viewBox="0 0 60 40"><rect width="60" height="40" fill="#AA151B"/><rect y="10" width="60" height="20" fill="#F1BF00"/></svg>
+                            <svg class="flag-svg" width="28" height="19" viewBox="0 0 60 40">
+                                <rect width="60" height="40" fill="#AA151B"/>
+                                <rect y="10" width="60" height="20" fill="#F1BF00"/>
+                            </svg>
                             <span class="lang-code">ES</span>
                         </span>
                         <span class="lang-name">Español</span>
                     </div>
-                    <div class="lang-option" role="menuitem" onclick="setLanguage('eu'); toggleLangMenu()" data-lang="eu">
+
+                    <!-- Euskera (ikurriña: aspa verde diagonal + cruz blanca) -->
+                    <div class="lang-option" role="menuitem"
+                         onclick="setLanguage('eu'); toggleLangMenu()" data-lang="eu">
                         <span class="lang-option-inner">
-                            <svg class="flag-svg" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="40" fill="#D8202C"/><line x1="0" y1="0" x2="60" y2="40" stroke="#007A3D" stroke-width="10"/><line x1="60" y1="0" x2="0" y2="40" stroke="#007A3D" stroke-width="10"/><rect x="25" y="0" width="10" height="40" fill="white"/><rect x="0" y="15" width="60" height="10" fill="white"/></svg>
+                            <svg class="flag-svg" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="60" height="40" fill="#D8202C"/>
+                                <line x1="0" y1="0" x2="60" y2="40" stroke="#007A3D" stroke-width="10"/>
+                                <line x1="60" y1="0" x2="0" y2="40" stroke="#007A3D" stroke-width="10"/>
+                                <rect x="25" y="0" width="10" height="40" fill="white"/>
+                                <rect x="0" y="15" width="60" height="10" fill="white"/>
+                            </svg>
                             <span class="lang-code">EU</span>
                         </span>
                         <span class="lang-name">Euskera</span>
                     </div>
-                    <div class="lang-option" role="menuitem" onclick="setLanguage('en'); toggleLangMenu()" data-lang="en">
+
+                    <!-- English (Union Jack) -->
+                    <div class="lang-option" role="menuitem"
+                         onclick="setLanguage('en'); toggleLangMenu()" data-lang="en">
                         <span class="lang-option-inner">
-                            <svg class="flag-svg" width="28" height="19" viewBox="0 0 60 40"><rect width="60" height="40" fill="#012169"/><line x1="0" y1="0" x2="60" y2="40" stroke="white" stroke-width="8"/><line x1="60" y1="0" x2="0" y2="40" stroke="white" stroke-width="8"/><line x1="0" y1="0" x2="60" y2="40" stroke="#C8102E" stroke-width="4.5"/><line x1="60" y1="0" x2="0" y2="40" stroke="#C8102E" stroke-width="4.5"/><rect x="24" y="0" width="12" height="40" fill="white"/><rect x="0" y="14" width="60" height="12" fill="white"/><rect x="26" y="0" width="8" height="40" fill="#C8102E"/><rect x="0" y="16" width="60" height="8" fill="#C8102E"/></svg>
+                            <svg class="flag-svg" width="28" height="19" viewBox="0 0 60 40">
+                                <rect width="60" height="40" fill="#012169"/>
+                                <line x1="0" y1="0" x2="60" y2="40" stroke="white" stroke-width="8"/>
+                                <line x1="60" y1="0" x2="0" y2="40" stroke="white" stroke-width="8"/>
+                                <line x1="0" y1="0" x2="60" y2="40" stroke="#C8102E" stroke-width="4.5"/>
+                                <line x1="60" y1="0" x2="0" y2="40" stroke="#C8102E" stroke-width="4.5"/>
+                                <rect x="24" y="0" width="12" height="40" fill="white"/>
+                                <rect x="0" y="14" width="60" height="12" fill="white"/>
+                                <rect x="26" y="0" width="8" height="40" fill="#C8102E"/>
+                                <rect x="0" y="16" width="60" height="8" fill="#C8102E"/>
+                            </svg>
                             <span class="lang-code">EN</span>
                         </span>
                         <span class="lang-name">English</span>
                     </div>
-                </div>
-            </div>
 
-            <!-- ── Selector de tema ── -->
+                </div>
+            </div><!-- /language-selector -->
+
+            <!-- ── Selector de tema y color ───────────────────────────────── -->
             <div class="theme-selector">
                 <button id="themeButton" class="theme-button" onclick="toggleThemeMenu()"
                         data-lang-key-aria="theme_btn_label">🎨</button>
+
                 <div id="themeMenu" class="theme-menu hidden" role="menu">
+
+                    <!-- Modo claro / oscuro / automático -->
                     <div class="theme-section-title" data-lang-key="theme_section_mode">Modo</div>
                     <div class="theme-option" onclick="changeTheme('auto')">
                         <span class="theme-icon">💡</span>
@@ -99,7 +138,10 @@
                         <span class="theme-icon">🌙</span>
                         <span data-lang-key="theme_dark">Oscuro</span>
                     </div>
+
                     <hr class="theme-divider">
+
+                    <!-- Esquema de color del acento -->
                     <div class="theme-section-title" data-lang-key="theme_section_color">Color</div>
                     <div class="color-grid">
                         <div class="color-option" onclick="changeColorScheme('blue')"   title="Azul">
@@ -123,23 +165,24 @@
                             <span class="color-preview" style="background:#dc2626;"></span>
                         </div>
                     </div>
+
                 </div>
-            </div>
+            </div><!-- /theme-selector -->
 
         </div><!-- /header-controls -->
     </div><!-- /header-wrapper -->
 </header>
 
 
-<!-- ═══════════════════════════════════════════════════════════════════════
+<!-- ═══════════════════════════════════════════════════════════════════════════
      CONTENIDO PRINCIPAL
-     ═══════════════════════════════════════════════════════════════════════ -->
+     ═══════════════════════════════════════════════════════════════════════════ -->
 <div class="container">
 
-    <!-- ── FILA DE MÓDULOS ─────────────────────────────────────────────── -->
+    <!-- ── FILA DE MÓDULOS ─────────────────────────────────────────────────── -->
     <div class="modules-row">
 
-        <!-- MÓDULO 1: TIPO DE LAZO (siempre activo) -->
+        <!-- MÓDULO 1: TIPO DE LAZO — siempre visible y activo -->
         <div class="module-card always-on" id="cardLoop">
             <div class="module-header">
                 <div class="module-title" data-lang-key="mod_loop_title">🔁 Tipo de Lazo</div>
@@ -154,7 +197,7 @@
             </div>
         </div>
 
-        <!-- MÓDULO 2: GENERADOR DE SEÑAL (siempre activo) -->
+        <!-- MÓDULO 2: GENERADOR DE SEÑAL — siempre visible y activo -->
         <div class="module-card always-on" id="cardInput">
             <div class="module-header">
                 <div class="module-title" data-lang-key="mod_input_title">📶 Generador de Señal</div>
@@ -162,15 +205,16 @@
             <div class="module-body">
                 <label class="field-label" for="inputTypeSelect" data-lang-key="input_type_label">Tipo de señal:</label>
                 <select class="field-select" id="inputTypeSelect" onchange="onInputTypeChange()">
-                    <option value="step"  data-lang-key="input_step">Escalón</option>
-                    <option value="ramp"  data-lang-key="input_ramp">Rampa</option>
-                    <option value="sin"   data-lang-key="input_sin">Senoidal</option>
+                    <option value="step" data-lang-key="input_step">Escalón</option>
+                    <option value="ramp" data-lang-key="input_ramp">Rampa</option>
+                    <option value="sin"  data-lang-key="input_sin">Senoidal</option>
                 </select>
+                <!-- Los parámetros de la señal se inyectan dinámicamente por JS -->
                 <div id="inputParamsContainer"></div>
             </div>
         </div>
 
-        <!-- MÓDULO 3: CONTROLADOR (PID / On-Off) — solo lazo cerrado, toggle -->
+        <!-- MÓDULO 3: CONTROLADOR (PID / On-Off) — solo disponible en lazo cerrado -->
         <div class="module-card" id="cardPID">
             <div class="module-header">
                 <div class="module-title" data-lang-key="mod_pid_title">🎛️ Controlador</div>
@@ -186,6 +230,7 @@
                     <option value="onoff" data-lang-key="controller_onoff">On/Off</option>
                 </select>
 
+                <!-- Parámetros PID (ocultos si se selecciona On/Off) -->
                 <div id="pidParamsDiv">
                     <label class="field-label" for="pKc" data-lang-key="kc_label">Ganancia $K_c$:</label>
                     <input  class="field-input" type="number" id="pKc" value="1.0" step="0.1" min="0.01" oninput="onParamChange()">
@@ -205,7 +250,7 @@
             </div>
         </div>
 
-        <!-- MÓDULO 4: PROCESO 1º / 2º ORDEN (toggle) -->
+        <!-- MÓDULO 4: PROCESO 1º / 2º ORDEN -->
         <div class="module-card" id="cardProcess">
             <div class="module-header">
                 <div class="module-title" data-lang-key="mod_process_title">⚙️ Proceso</div>
@@ -227,18 +272,18 @@
                 <label class="field-label" for="pT1" data-lang-key="t1_label">$T_1$ (s):</label>
                 <input  class="field-input" type="number" id="pT1" value="2.0" step="0.1" min="0.01" oninput="onParamChange()">
 
-                <!-- T2 solo visible en 2º orden -->
+                <!-- T2 solo visible cuando el proceso es de 2º orden y está activo -->
                 <div id="t2Row" style="display:none;">
                     <label class="field-label" for="pT2" data-lang-key="t2_label">$T_2$ (s):</label>
                     <input  class="field-input" type="number" id="pT2" value="0.5" step="0.1" min="0.001" oninput="onParamChange()">
                 </div>
 
-                <!-- Parámetros calculados -->
+                <!-- Parámetros calculados (τ o ωn/ζ, según el orden) -->
                 <div class="derived-info" id="derivedInfoDiv"></div>
             </div>
         </div>
 
-        <!-- MÓDULO 5: RETARDO DE PROCESO (toggle) -->
+        <!-- MÓDULO 5: RETARDO DE PROCESO -->
         <div class="module-card" id="cardDelay">
             <div class="module-header">
                 <div class="module-title" data-lang-key="mod_delay_title">⏱️ Retardo</div>
@@ -253,7 +298,7 @@
             </div>
         </div>
 
-        <!-- MÓDULO 6: REALIMENTACIÓN (solo lazo cerrado, siempre activo cuando visible) -->
+        <!-- MÓDULO 6: REALIMENTACIÓN — solo visible en lazo cerrado, siempre activo cuando visible -->
         <div class="module-card always-on" id="cardFeedback" style="display:none;">
             <div class="module-header">
                 <div class="module-title" data-lang-key="mod_feedback_title">↩️ Realimentación</div>
@@ -264,6 +309,7 @@
                     <option value="unity" data-lang-key="feedback_unity">Unitaria H(s)=1</option>
                     <option value="delay" data-lang-key="feedback_delay">Con Retardo</option>
                 </select>
+                <!-- Parámetro Th: solo visible si se elige realimentación con retardo -->
                 <div id="thRow" style="display:none;">
                     <label class="field-label" for="pTh" data-lang-key="th_label">$T_h$ (s):</label>
                     <input  class="field-input" type="number" id="pTh" value="0.5" step="0.1" min="0" oninput="onParamChange()">
@@ -274,14 +320,16 @@
     </div><!-- /modules-row -->
 
 
-    <!-- ── FILA: FUNCIÓN DE TRANSFERENCIA + DIAGRAMA ───────────────────── -->
+    <!-- ── ECUACIONES + DIAGRAMA DE BLOQUES ─────────────────────────────────── -->
     <div class="info-row">
 
+        <!-- Panel izquierdo: ecuaciones simbólico = numérico, alineadas a la izq. -->
         <div class="info-panel">
-            <h2 data-lang-key="ft_section_title">Función de Transferencia</h2>
+            <h2 data-lang-key="ft_section_title">Ecuaciones</h2>
             <div id="ftDisplay"></div>
         </div>
 
+        <!-- Panel derecho: diagrama SVG de bloques generado por JS -->
         <div class="info-panel">
             <h2 data-lang-key="diagram_section_title">Diagrama de Bloques</h2>
             <svg id="diagramSvg" xmlns="http://www.w3.org/2000/svg"></svg>
@@ -290,17 +338,17 @@
     </div><!-- /info-row -->
 
 
-    <!-- ── BOTONES DE ACCIÓN ───────────────────────────────────────────── -->
+    <!-- ── BOTONES DE ACCIÓN ─────────────────────────────────────────────────── -->
     <div class="actions-row">
-        <button class="btn btn-primary"   onclick="addSimulationLine()"    data-lang-key="button_simulate">➕ Simular y Añadir</button>
-        <button class="btn btn-secondary" onclick="downloadChartAsImage()" data-lang-key="button_download_image">🖼️ Descargar PNG</button>
+        <button class="btn btn-primary"   onclick="addSimulationLine()"     data-lang-key="button_simulate">➕ Simular y Añadir</button>
+        <button class="btn btn-secondary" onclick="downloadChartAsImage()"  data-lang-key="button_download_image">🖼️ Descargar PNG</button>
         <button class="btn btn-secondary" onclick="downloadChartDataAsCSV()" data-lang-key="button_download_data">📊 Descargar CSV</button>
-        <button class="btn btn-danger"    onclick="clearResponses()"       data-lang-key="button_clear_responses">🗑️ Borrar Salidas</button>
-        <button class="btn btn-danger"    onclick="clearAllLines()"        data-lang-key="button_clear_all">🗑️ Borrar Todo</button>
+        <button class="btn btn-danger"    onclick="clearResponses()"        data-lang-key="button_clear_responses">🗑️ Borrar Salidas</button>
+        <button class="btn btn-danger"    onclick="clearAllLines()"         data-lang-key="button_clear_all">🗑️ Borrar Todo</button>
     </div>
 
 
-    <!-- ── GRÁFICA ────────────────────────────────────────────────────── -->
+    <!-- ── GRÁFICA TEMPORAL ──────────────────────────────────────────────────── -->
     <div class="chart-section">
         <h2 data-lang-key="chart_section_title">Respuesta Temporal Y(t)</h2>
         <div class="chart-canvas-wrapper">
@@ -309,7 +357,7 @@
     </div>
 
 
-    <!-- ── PIE DE PÁGINA ──────────────────────────────────────────────── -->
+    <!-- ── PIE DE PÁGINA ────────────────────────────────────────────────────── -->
     <footer>
         <div class="credit-text-main">
             <span data-lang-key="credit_author">Hecho por Julián Hernández.</span>
