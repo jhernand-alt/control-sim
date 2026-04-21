@@ -67,12 +67,18 @@ window.LANG_ES = {
     th_label:               'Retardo $T_h$ (s):',
 
     // ── FT y diagrama ─────────────────────────────────────────────────────────
-    ft_section_title:       'Función de Transferencia',
+    ft_section_title:       'Ecuaciones',
     diagram_section_title:  'Diagrama de Bloques',
-    ft_proc_title:          'Proceso $G_p(s)$:',
-    ft_pid_title:           'Controlador $G_c(s)$:',
-    ft_open_loop_title:     'Lazo Abierto $G(s)$:',
-    ft_closed_loop_title:   'Lazo Cerrado $G_{LC}(s)$:',
+    ft_proc_title:          'Proceso $G_p(s)$',
+    ft_pid_title:           'Controlador $G_c(s)$',
+    ft_open_loop_title:     'Lazo Abierto $G(s)$',
+    ft_closed_loop_title:   'Lazo Cerrado $G_{LC}(s)$',
+    ft_yt_label:            'Respuesta $y(t)$',
+    math_yt_overdamped:     'Sobreamortiguado',
+    math_yt_critical:       'Críticamente amortiguado',
+    math_yt_underdamped:    'Subamortiguado',
+    math_yt_2nd_complex_ramp: 'Rampa/seno en 2º orden sub/crítico — no disponible analíticamente.',
+    math_yt_cl_complex:     'Con PID, retardo o realim. no unitaria no existe expresión analítica cerrada. Usa la simulación numérica.',
 
     // ── Botones ──────────────────────────────────────────────────────────────
     button_simulate:        '➕ Simular y Añadir',

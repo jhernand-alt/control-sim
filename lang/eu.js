@@ -67,12 +67,18 @@ window.LANG_EU = {
     th_label:               'Atzerapena $T_h$ (s):',
 
     // ── TF eta diagrama ───────────────────────────────────────────────────────
-    ft_section_title:       'Transferentzia-funtzioa',
+    ft_section_title:       'Ekuazioak',
     diagram_section_title:  'Bloke-diagrama',
-    ft_proc_title:          'Prozesua $G_p(s)$:',
-    ft_pid_title:           'Kontrolagailua $G_c(s)$:',
-    ft_open_loop_title:     'Begizta irekia $G(s)$:',
-    ft_closed_loop_title:   'Begizta itxia $G_{LC}(s)$:',
+    ft_proc_title:          'Prozesua $G_p(s)$',
+    ft_pid_title:           'Kontrolagailua $G_c(s)$',
+    ft_open_loop_title:     'Begizta irekia $G(s)$',
+    ft_closed_loop_title:   'Begizta itxia $G_{LC}(s)$',
+    ft_yt_label:            'Erantzuna $y(t)$',
+    math_yt_overdamped:     'Gainmotigatua',
+    math_yt_critical:       'Muga-motiga',
+    math_yt_underdamped:    'Azpimotigatua',
+    math_yt_2nd_complex_ramp: 'Rampa/sinusoidal 2. ordenan — ez dago adierazpen analitikorik.',
+    math_yt_cl_complex:     'PID/atzerapena/errealimenua ez-unitarioa — ez dago adierazpen itxirik. Erabili simulazio numerikoa.',
 
     // ── Botoiak ──────────────────────────────────────────────────────────────
     button_simulate:        '➕ Simulatu eta gehitu',

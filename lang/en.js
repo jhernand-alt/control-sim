@@ -67,12 +67,18 @@ window.LANG_EN = {
     th_label:               'Delay $T_h$ (s):',
 
     // ── FT and diagram ────────────────────────────────────────────────────────
-    ft_section_title:       'Transfer Function',
+    ft_section_title:       'Equations',
     diagram_section_title:  'Block Diagram',
-    ft_proc_title:          'Process $G_p(s)$:',
-    ft_pid_title:           'Controller $G_c(s)$:',
-    ft_open_loop_title:     'Open Loop $G(s)$:',
-    ft_closed_loop_title:   'Closed Loop $G_{LC}(s)$:',
+    ft_proc_title:          'Process $G_p(s)$',
+    ft_pid_title:           'Controller $G_c(s)$',
+    ft_open_loop_title:     'Open Loop $G(s)$',
+    ft_closed_loop_title:   'Closed Loop $G_{LC}(s)$',
+    ft_yt_label:            'Response $y(t)$',
+    math_yt_overdamped:     'Overdamped',
+    math_yt_critical:       'Critically damped',
+    math_yt_underdamped:    'Underdamped',
+    math_yt_2nd_complex_ramp: 'Ramp/sine for under/critical 2nd order — no closed-form available.',
+    math_yt_cl_complex:     'No closed-form expression with PID, delay or non-unity feedback. Use numerical simulation.',
 
     // ── Buttons ───────────────────────────────────────────────────────────────
     button_simulate:        '➕ Simulate & Add',
